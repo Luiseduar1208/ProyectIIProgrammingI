@@ -3,19 +3,19 @@ package com.ucr.ecci.Sheets;
 public class List {
   private class Node {
     /**Dato que contiene la lista. */
-    private String listData;
+    private Integer listData;
     /**Enlace siguiente de la lista. */
     private Node next;
     /**Enlace previo de la lista. */
     private Node previous;
 
-    Node(final String data) {
+    Node(final Integer data) {
       this.listData = data;
       this.next = null;
       this.previous = null;
     }
     //Getters
-    public String getListData() {
+    public Integer getListData() {
       return listData;
     }
     public Node getNext() {
@@ -26,7 +26,7 @@ public class List {
     }
 
     //Setters
-    public void setListData(final String data) {
+    public void setListData(final Integer data) {
       this.listData = data;
     }
     public void setNext(final Node next) {
@@ -35,7 +35,11 @@ public class List {
     public void setPrevious(final Node previous) {
       this.previous = previous;
     }
-  }
+    @Override
+    public String toString() {
+      return String.valueOf(listData);
+    }
+}
   /**Tamaño de la lista. */
   private int size;
   /**Cabeza o parte frontal de la lista. */
@@ -64,7 +68,7 @@ public class List {
    * Método encargado de añadir elementos al principio de la lista.
    * @param data
    */
-  public void addFront(final String data) {
+  public void addFront(final Integer data) {
     Node n = new Node(data);
     if (isEmpty()) {
       this.head = n;
@@ -81,7 +85,7 @@ public class List {
    * Método encargado de añadir elementos al final de la lista.
    * @param data
    */
-  public void addBack(final String data) {
+  public void addBack(final Integer data) {
     Node n = new Node(data);
     if (isEmpty()) {
       this.head = n;
@@ -125,8 +129,8 @@ public class List {
    * @param index
    * @return data
    */
-  public String getAt(final int index) {
-    String data = null;
+  public Integer getAt(final int index) {
+    Integer data = null;
     if (0 < index && index < this.size) {
       Node tmp = this.head;
       for (int i = 0; i < this.size; i++) {
@@ -145,7 +149,7 @@ public class List {
    * @param index
    * @param data
    */
-  public void setAt(final int index, final String data) {
+  public void setAt(final int index, final Integer data) {
     if (0 < index && index < this.size) {
       Node tmp = this.head;
       for (int i = 0; i < this.size; i++) {
@@ -165,15 +169,15 @@ public class List {
     if (this.head == null || this.head.getNext() == null) {
       return; // no hay nada que ordenar
     }
+
     boolean swapped = true;
     while (swapped) {
       swapped = false;
       Node tmp = this.head;
       while (tmp.getNext() != null) {
-        // Comparar los datos de tipo String
-        if (tmp.getListData().compareTo(tmp.getNext().getListData()) > 0) {
+        if (tmp.getListData() > tmp.getNext().getListData()) {
           // Intercambiar los valores (no los nodos)
-          String aux = tmp.getListData();
+          Integer aux = tmp.getListData();
           tmp.setListData(tmp.getNext().getListData());
           tmp.getNext().setListData(aux);
           swapped = true;
@@ -183,11 +187,12 @@ public class List {
     }
   }
 
+
   /**Impresión básica o prueba de la lista. */
   public void print() {
     Node tmp = this.head;
     for (int i = 0; i < this.size; i++) {
-      System.out.println(tmp + "->");
+      System.out.print(tmp + " --> ");
       tmp = tmp.getNext();
     }
     System.out.println();

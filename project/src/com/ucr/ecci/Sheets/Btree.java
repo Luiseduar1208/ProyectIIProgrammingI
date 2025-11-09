@@ -47,7 +47,7 @@ public class Btree {
       if (this.left != null) {
         this.left.printInOrder();
       }
-      System.out.println("[ " + key + " ]" + ":" + treeData);
+      System.out.println("[" + key + "]" + " : " + treeData);
       if (this.right != null) {
         this.right.printInOrder();
       }
@@ -82,34 +82,38 @@ public class Btree {
    */
   public void add(final int key, final String data) {
     if (isEmpty()) {
-      Node n = new Node(key, data);
-      this.root = n;
+      Node node = new Node(key, data);
+      this.root = node;
       this.count++;
     } else {
-      Node tmp = new Node(key, data);
+      Node tmp = this.root;
       while (tmp != null) {
         if (key < tmp.getKey()) {
           if (tmp.getLeft() == null) {
-            Node n = new Node(key, data);
-            tmp.setLeft(n);
+            Node node = new Node(key, data);
+            tmp.setLeft(node);
             this.count++;
             break;
           } else {
             tmp = tmp.getLeft();
           }
-        } else if (key  > tmp.getKey()) {
+        } else if (key > tmp.getKey()) {
           if (tmp.getRight() == null) {
-            Node n = new Node(key, data);
-            tmp.setRight(n);
+            Node node = new Node(key, data);
+            tmp.setRight(node);
             this.count++;
             break;
           } else {
             tmp = tmp.getRight();
           }
+        } else {
+          // key es igual a la llave de un nodo.
+          break;
         }
       }
     }
   }
+
 
   /**
    * Método para encontrar un valor arbitrario del árbol según su llave.
