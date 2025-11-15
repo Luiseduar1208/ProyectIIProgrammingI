@@ -79,6 +79,52 @@ public class ConjuntoFracciones {
   }
 
   /**
+   * Método de division.
+   * @param divider
+   * @return la división de las fracciones.
+   */
+  public ConjuntoFracciones divide(final ConjuntoFracciones divider) {
+    long newNumerador = (this.numerador * divider.denominador);
+    long newDenominator = (this.denominador * divider.numerador);
+    return new ConjuntoFracciones(newNumerador, newDenominator);
+  }
+
+  /**
+   * Clase que calcula el promedio.
+   * @param controller
+   * @return devuelve el promedio
+   */
+  public ConjuntoFracciones sumarRango(final Controller controller) {
+
+    String[][] mtx = controller.getiMtx();
+    int col = controller.getCol();
+
+    int calcStart = controller.startI() * col + controller.startJ();
+    int calcEnd   = controller.endI()   * col + controller.endJ();
+
+    ConjuntoFracciones acumulado = new ConjuntoFracciones(0, 1);
+
+    for (int idx = calcStart; idx <= calcEnd; idx++) {
+
+      int fila = idx / col;
+      int columna = idx % col;
+      String valor = mtx[fila][columna];   // Ej: "3/4"
+
+      String[] partes = valor.split("/");
+      long num = Long.parseLong(partes[0]);
+      long den = Long.parseLong(partes[1]);
+      ConjuntoFracciones f = new ConjuntoFracciones(num, den);
+      acumulado = acumulado.sum(f);
+    }
+    int count = (calcEnd - calcStart + 1);
+    ConjuntoFracciones avg = new ConjuntoFracciones(count, 1);
+    avg = acumulado.divide(avg);
+    return avg;
+  }
+
+
+
+  /**
    * Transforma la fracción a una representación en formato String.
    * @autor Alberto Rojas (implementación original)
    */
