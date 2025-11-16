@@ -77,7 +77,16 @@ public class ConjuntoFracciones {
     long newDenominador = this.denominador * other.denominador;
     return new ConjuntoFracciones(newNumerador, newDenominador);
   }
-
+  /**
+   * Multiplica fracciones.
+   * @param other Fracción a multiplicar.
+   * @return La multiplicación del valor de la fracción.
+   */
+  public ConjuntoFracciones multiplication(final ConjuntoFracciones other) {
+    long newNumerador = this.numerador * other.numerador;
+    long newDenominador = this.denominador * other.denominador;
+    return new ConjuntoFracciones(newNumerador, newDenominador);
+  }
   /**
    * Método de division.
    * @param divider
@@ -89,6 +98,104 @@ public class ConjuntoFracciones {
     return new ConjuntoFracciones(newNumerador, newDenominator);
   }
 
+  /**
+   * Función capaz de calcular la fracción más grande.
+   * @param controller
+   * @return la fracción más grande entre dos puntos arbitrarios
+   */
+  public ConjuntoFracciones maximum(final Controller controller) {
+
+    String[][] mtx = controller.getiMtx();
+    int col = controller.getCol();
+
+    int calcStart = controller.startI() * col + controller.startJ();
+    int calcEnd   = controller.endI()   * col + controller.endJ();
+    int count = (calcEnd - calcStart) + 1;
+
+    ConjuntoFracciones[] fracciones = new ConjuntoFracciones[count];
+    double[] decimalValue = new double[count];
+
+    int index = 0;
+    for (int idx = calcStart; idx <= calcEnd; idx++) {
+
+        int fila = idx / col;
+        int columna = idx % col;
+
+        String valor = mtx[fila][columna];
+        String[] partes = valor.split("/");
+
+        long num = Long.parseLong(partes[0]);
+        long den = Long.parseLong(partes[1]);
+
+        double decimalV = (double) num / den;
+
+        decimalValue[index] = decimalV;
+
+        ConjuntoFracciones f = new ConjuntoFracciones(num, den);
+        fracciones[index] = f;
+
+        index++;
+    }
+
+    int maxIndex = 0;
+    double maxValor = decimalValue[0];
+    for (int i = 1; i < count; i++) {
+      if (decimalValue[i] > maxValor) {
+        maxValor = decimalValue[i];
+        maxIndex = i;
+      }
+    }
+    return fracciones[maxIndex];
+  }
+  /**
+   * Función capaz de calcular la fracción más pequeña.
+   * @param controller
+   * @return la fracción más pequeña entre dos puntos arbitrarios
+   */
+  public ConjuntoFracciones minimum(final Controller controller) {
+
+    String[][] mtx = controller.getiMtx();
+    int col = controller.getCol();
+
+    int calcStart = controller.startI() * col + controller.startJ();
+    int calcEnd   = controller.endI()   * col + controller.endJ();
+    int count = (calcEnd - calcStart) + 1;
+
+    ConjuntoFracciones[] fracciones = new ConjuntoFracciones[count];
+    double[] decimalValue = new double[count];
+
+    int index = 0;
+    for (int idx = calcStart; idx <= calcEnd; idx++) {
+
+        int fila = idx / col;
+        int columna = idx % col;
+
+        String valor = mtx[fila][columna];
+        String[] partes = valor.split("/");
+
+        long num = Long.parseLong(partes[0]);
+        long den = Long.parseLong(partes[1]);
+
+        double decimalV = (double) num / den;
+
+        decimalValue[index] = decimalV;
+
+        ConjuntoFracciones f = new ConjuntoFracciones(num, den);
+        fracciones[index] = f;
+
+        index++;
+    }
+
+    int minIndex = 0;
+    double minValor = decimalValue[0];
+    for (int i = 1; i < count; i++) {
+      if (decimalValue[i] < minValor) {
+        minValor = decimalValue[i];
+        minIndex = i;
+      }
+    }
+    return fracciones[minIndex];
+  }
   /**
    * Clase que calcula el promedio.
    * @param controller
@@ -193,9 +300,6 @@ public class ConjuntoFracciones {
   }
   return median;
 }
-
-
-
   /**
    * Transforma la fracción a una representación en formato String.
    * @autor Alberto Rojas (implementación original)
