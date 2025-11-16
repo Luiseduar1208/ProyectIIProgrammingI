@@ -94,7 +94,7 @@ public class ConjuntoFracciones {
    * @param controller
    * @return devuelve el promedio
    */
-  public ConjuntoFracciones sumarRango(final Controller controller) {
+  public ConjuntoFracciones average(final Controller controller) {
 
     String[][] mtx = controller.getiMtx();
     int col = controller.getCol();
@@ -108,7 +108,7 @@ public class ConjuntoFracciones {
 
       int fila = idx / col;
       int columna = idx % col;
-      String valor = mtx[fila][columna];   // Ej: "3/4"
+      String valor = mtx[fila][columna];
 
       String[] partes = valor.split("/");
       long num = Long.parseLong(partes[0]);
@@ -121,6 +121,78 @@ public class ConjuntoFracciones {
     avg = acumulado.divide(avg);
     return avg;
   }
+  /**
+   * Función capaz de calcular la mediana.
+   * @param controller
+   * @return la mediana entre dos puntos arbitrarios
+   */
+  public ConjuntoFracciones median(final Controller controller) {
+
+    String[][] mtx = controller.getiMtx();
+    int col = controller.getCol();
+
+    int calcStart = controller.startI() * col + controller.startJ();
+    int calcEnd   = controller.endI()   * col + controller.endJ();
+    int count = (calcEnd - calcStart) + 1;
+
+    ConjuntoFracciones[] medianCalc = new ConjuntoFracciones[count];
+    double[] decimalValue = new double[count];
+
+    int index = 0;
+    for (int idx = calcStart; idx <= calcEnd; idx++) {
+
+        int fila = idx / col;
+        int columna = idx % col;
+
+        String valor = mtx[fila][columna];
+        String[] partes = valor.split("/");
+
+        long num = Long.parseLong(partes[0]);
+        long den = Long.parseLong(partes[1]);
+
+        double decimalV = (double) num / den;
+
+        decimalValue[index] = decimalV;
+
+        ConjuntoFracciones f = new ConjuntoFracciones(num, den);
+        medianCalc[index] = f;
+
+        index++;
+    }
+
+  int n = medianCalc.length;
+  for (int i = 0; i < n - 1; i++) {
+      boolean swapped = false;
+      for (int j = 0; j < n - 1 - i; j++) {
+          if (decimalValue[j] > decimalValue[j + 1]) {
+              double tmpD = decimalValue[j];
+              decimalValue[j] = decimalValue[j + 1];
+              decimalValue[j + 1] = tmpD;
+
+              ConjuntoFracciones tmp = medianCalc[j];
+              medianCalc[j] = medianCalc[j + 1];
+              medianCalc[j + 1] = tmp;
+
+              swapped = true;
+          }
+      }
+      if (!swapped) {
+          break;
+      }
+  }
+
+  ConjuntoFracciones median;
+
+  if (n % 2 == 0) {
+      ConjuntoFracciones upper = medianCalc[n / 2];
+      ConjuntoFracciones lower = medianCalc[(n - 1) / 2];
+      ConjuntoFracciones two = new ConjuntoFracciones(2, 1);
+      median = lower.sum(upper).divide(two);
+  } else {
+      median = medianCalc[n / 2];
+  }
+  return median;
+}
 
 
 
