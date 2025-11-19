@@ -1,4 +1,5 @@
 package com.ucr.ecci.Sheets;
+import java.lang.reflect.Parameter;
 import java.util.Scanner;
 
 public class Controller {
@@ -84,5 +85,61 @@ public int endJ() {
     return colEnd;
 }
 
+/**
+ * Procesa el comando.
+ * Verifica la linea de comando.
+ */
+public void comandProcessor() {
+  String line = input.nextLine();
+  commandRun(line);
+}
+/**
+ * Corre el comando.
+ */
+private void commandRun(final String command) {
+  String commandWhioutEqual = command.substring(1);
+  int openParen = commandWhioutEqual.indexOf('(');
+  int closeParen = commandWhioutEqual.lastIndexOf(')');
 
+
+  String commandName = commandWhioutEqual.substring(0, openParen);
+  String parameters = commandWhioutEqual.substring(openParen + 1, closeParen)
+
+  if (commandName.equals("CEL")){
+      //CEL(parameters);
+  } else if (commandName.equals("SET")){
+      //SET(parameters);
+  } else if (commandName.equals("SUM")){
+      //SUM(parameters);
+  } else if (commandName.equals("MUL")){
+      //MUL(parameters);
+  } else if (commandName.equals("AVR")){
+      String[] rango = parameters.split(":");
+      start = rango[0];
+      end = rango[1];
+      ConjuntoFracciones resultado = new ConjuntoFracciones(0, 1).average(this);
+      System.out.println(resultado);
+  } else if (commandName.equals("MDN")){
+      String[] rango = parameters.split(":");
+      start = rango[0];
+      end = rango[1];
+      ConjuntoFracciones resultado = new ConjuntoFracciones(0, 1).median(this);
+      System.out.println(resultado);
+  } else if (commandName.equals("MIN")){
+      String[] rango = parameters.split(":");
+      start = rango[0];
+      end = rango[1];
+      ConjuntoFracciones resultado = new ConjuntoFracciones(0, 1).minimum(this);
+      System.out.println(resultado);
+  } else if (commandName.equals("MAX")){
+      String[] rango = parameters.split(":");
+      start = rango[0];
+      end = rango[1];
+      ConjuntoFracciones resultado = new ConjuntoFracciones(0, 1).maximum(this);
+      System.out.println(resultado);
+  } else if (commandName.equals("PRINT")){
+      //PRINT(parameters);
+  }
+
+}
 }
