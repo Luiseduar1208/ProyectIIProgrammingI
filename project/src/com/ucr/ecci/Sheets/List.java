@@ -3,19 +3,19 @@ package com.ucr.ecci.Sheets;
 public class List {
   private class Node {
     /**Dato que contiene la lista. */
-    private Integer listData;
+    private ConjuntoFracciones listData;
     /**Enlace siguiente de la lista. */
     private Node next;
     /**Enlace previo de la lista. */
     private Node previous;
 
-    Node(final Integer data) {
+    Node(final ConjuntoFracciones data) {
       this.listData = data;
       this.next = null;
       this.previous = null;
     }
     //Getters
-    public Integer getListData() {
+    public ConjuntoFracciones getListData() {
       return listData;
     }
     public Node getNext() {
@@ -26,7 +26,7 @@ public class List {
     }
 
     //Setters
-    public void setListData(final Integer data) {
+    public void setListData(final ConjuntoFracciones data) {
       this.listData = data;
     }
     public void setNext(final Node next) {
@@ -68,7 +68,7 @@ public class List {
    * Método encargado de añadir elementos al principio de la lista.
    * @param data
    */
-  public void addFront(final Integer data) {
+  public void addFront(final ConjuntoFracciones data) {
     Node n = new Node(data);
     if (isEmpty()) {
       this.head = n;
@@ -85,7 +85,7 @@ public class List {
    * Método encargado de añadir elementos al final de la lista.
    * @param data
    */
-  public void addBack(final Integer data) {
+  public void addBack(final ConjuntoFracciones data) {
     Node n = new Node(data);
     if (isEmpty()) {
       this.head = n;
@@ -129,9 +129,9 @@ public class List {
    * @param index
    * @return data
    */
-  public Integer getAt(final int index) {
-    Integer data = null;
-    if (0 < index && index < this.size) {
+  public ConjuntoFracciones getAt(final int index) {
+    ConjuntoFracciones data = null;
+    if (0 <= index && index < this.size) {
       Node tmp = this.head;
       for (int i = 0; i < this.size; i++) {
         if (i == index) {
@@ -149,8 +149,8 @@ public class List {
    * @param index
    * @param data
    */
-  public void setAt(final int index, final Integer data) {
-    if (0 < index && index < this.size) {
+  public void setAt(final int index, final ConjuntoFracciones data) {
+    if (0 <= index && index < this.size) {
       Node tmp = this.head;
       for (int i = 0; i < this.size; i++) {
         if (i == index) {
@@ -161,42 +161,4 @@ public class List {
       }
     }
   }
-
-    /**
-   * Método encargado de ordenar los elementos de la lista de forma ascendente.
-   */
-  public void sort() {
-    if (this.head == null || this.head.getNext() == null) {
-      return; // no hay nada que ordenar
-    }
-
-    boolean swapped = true;
-    while (swapped) {
-      swapped = false;
-      Node tmp = this.head;
-      while (tmp.getNext() != null) {
-        if (tmp.getListData() > tmp.getNext().getListData()) {
-          // Intercambiar los valores (no los nodos)
-          Integer aux = tmp.getListData();
-          tmp.setListData(tmp.getNext().getListData());
-          tmp.getNext().setListData(aux);
-          swapped = true;
-        }
-        tmp = tmp.getNext();
-      }
-    }
-  }
-
-
-  /**Impresión básica o prueba de la lista. */
-  public void print() {
-    Node tmp = this.head;
-    for (int i = 0; i < this.size; i++) {
-      System.out.print(tmp + " --> ");
-      tmp = tmp.getNext();
-    }
-    System.out.println();
-  }
-
-
 }

@@ -5,13 +5,13 @@ public class Btree {
     /**Llave del elemento. */
     private int key;
     /**Dato. */
-    private String treeData;
+    private List treeData;
     /**Izquierda del nodo. */
     private Node left;
     /**Derecha del nodo. */
     private Node right;
 
-    Node(final int key, final String data) {
+    Node(final int key, final List data) {
       this.treeData = data;
       this.key = key;
       this.left = null;
@@ -22,7 +22,7 @@ public class Btree {
     public int getKey() {
       return key;
     }
-    public String getTreeData() {
+    public List getTreeData() {
       return treeData;
     }
     public Node getLeft() {
@@ -33,7 +33,7 @@ public class Btree {
     }
 
     //Setters
-    public void setTreeData(final String treeData) {
+    public void setTreeData(final List treeData) {
       this.treeData = treeData;
     }
     public void setLeft(final Node left) {
@@ -80,7 +80,7 @@ public class Btree {
    * @param key
    * @param data
    */
-  public void add(final int key, final String data) {
+  public void add(final int key, final List data) {
     if (isEmpty()) {
       Node node = new Node(key, data);
       this.root = node;
@@ -120,8 +120,8 @@ public class Btree {
    * @param key
    * @return {@code treeData}
    */
-  public String getAt(final int key) {
-    String treeData = null;
+  public List getAt(final int key) {
+    List treeData = null;
     if (!isEmpty()) {
       Node tmp = this.root;
       while (tmp != null) {
@@ -143,7 +143,7 @@ public class Btree {
    * @param key
    * @param treeData
    */
-  public void setAt(final int key, final String treeData) {
+  public void setAt(final int key, final List treeData) {
     if (!isEmpty()) {
       Node tmp = this.root;
       while (tmp != null) {
