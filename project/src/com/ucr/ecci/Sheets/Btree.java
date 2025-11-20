@@ -42,17 +42,8 @@ public class Btree {
     public void setRight(final Node right) {
       this.right = right;
     }
-
-    public void printInOrder() {
-      if (this.left != null) {
-        this.left.printInOrder();
-      }
-      System.out.println("[" + key + "]" + " : " + treeData);
-      if (this.right != null) {
-        this.right.printInOrder();
-      }
-    }
   }
+
   /**Contador del arbol. */
   private int count;
   /**Raíz del árbol. */
@@ -159,11 +150,70 @@ public class Btree {
     }
   }
 
-  /**Impresión de la clase {@code Btree}. */
-  public void printInOrder() {
-    if (!isEmpty()) {
-      this.root.printInOrder();
-    }
+  /**
+   * Poner el arbol como un arreglo para una impresion mas facil.
+   * @return el arreglo
+   */
+  public List[] toArrayInOrder() {
+    List[] arr = new List[this.count];
+    Index idx = new Index();
+    fillInOrder(this.root, arr, idx);
+    return arr;
+  }
+
+  private void fillInOrder(final Node n, final List[] arr, final Index idx) {
+      if (n == null) {
+        return;
+      }
+      fillInOrder(n.getLeft(), arr, idx);
+      arr[idx.value++] = n.getTreeData();
+      fillInOrder(n.getRight(), arr, idx);
+  }
+
+  /**Índice para los datos. */
+  private class Index {
+    /**Valor. */
+      private int value = 0;
+  }
+
+  /**
+   * Impresion del árbol en estilo de matriz.
+   * @param col
+   * @param row
+   */
+  public void printAsSheet(final int row, final int col) {
+      List[] array = toArrayInOrder();
+
+      // Encabezado
+      System.out.print("   |");
+      for (int i = 0; i < col; i++) {
+          char colLetter = (char) ('A' + i);
+          System.out.printf("%4c", colLetter);
+      }
+      System.out.println();
+
+      // Línea separadora
+      System.out.print("---+");
+      for (int i = 0; i < col; i++) {
+          System.out.print("---- ");
+      }
+      System.out.println();
+
+      // Contenido
+      int count = 1;
+      System.out.printf("%3d|", count);
+
+      for (int i = 0; i < array.length; i++) {
+          ConjuntoFracciones cf = array[i].getAt(0);
+          System.out.printf("%4s", cf.toString());
+
+          if ((i + 1) % col == 0 && i < array.length - 1) {
+              System.out.println();
+              count++;
+              System.out.printf("%3d|", count);
+          }
+      }
+      System.out.println();
   }
 
 }

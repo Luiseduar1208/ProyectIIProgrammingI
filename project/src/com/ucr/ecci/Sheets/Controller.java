@@ -205,7 +205,7 @@ public class Controller {
         c.maximum(this);
 
     } else if (commandName.equals("PRINT")) {
-        b.printAsSheet(col);
+        b.printAsSheet(row, col);
     }
 
   }
