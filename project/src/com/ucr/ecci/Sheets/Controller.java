@@ -216,8 +216,7 @@ public class Controller {
         c.maximum(this);
 
     } else if (commandName.equals("PRINT")) {
-        //PRINT(parameters);
-        return;
+        new ConjuntoFracciones(0, 1).printSheet(this);
     }
 
   }

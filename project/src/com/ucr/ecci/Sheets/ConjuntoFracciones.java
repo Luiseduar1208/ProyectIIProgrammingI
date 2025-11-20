@@ -288,7 +288,48 @@ public class ConjuntoFracciones {
     controller.getB().add(destine, l);
 
   }
-
+  /**
+   * Imprime la Hoja.
+   * @param controller controlador con la matriz.
+   */
+  public void printSheet(final Controller controller){
+    String[][] mtx = controller.getiMtx();
+    int rows = controller.getRow();
+    int cols = controller.getCol();
+    
+    int maxWidth = 4;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (mtx[i][j].length() > maxWidth) {
+                maxWidth = mtx[i][j].length();
+            }
+        }
+    }
+    
+    System.out.print("   |");
+    for (int j = 0; j < cols; j++) {
+        char colLetter = (char) ('A' + j);
+        System.out.printf(" %" + maxWidth + "s", colLetter);
+    }
+    System.out.println();
+    
+    System.out.print("---+");
+    for (int j = 0; j < cols; j++) {
+        for (int k = 0; k < maxWidth; k++) {
+            System.out.print("-");
+        }
+        System.out.print(" ");
+    }
+    System.out.println();
+    
+    for (int i = 0; i < rows; i++) {
+        System.out.printf("%2d |", i + 1);
+        for (int j = 0; j < cols; j++) {
+            System.out.printf(" %" + maxWidth + "s", mtx[i][j]);
+        }
+        System.out.println();
+    }
+  }
   /** Representación en formato texto. */
   @Override
   public String toString() {
