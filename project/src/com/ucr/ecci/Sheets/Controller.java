@@ -8,7 +8,7 @@ public class Controller {
   private String[][] iMtx;
   /**Cantidad de lineas. */
   private int row;
-  /**Cantidad de columnas. */
+  /**Cantidad de colums. */
   private int col;
   /**Coordenadas de inicio. */
   private String start;
@@ -60,14 +60,14 @@ public class Controller {
   }
 
   /**
-   * Getter de la Columna.
+   * Getter de la colum.
    * @return col
    */
   public int getCol() {
     return col;
   }
   /**
-   * Getter de la Fila.
+   * Getter de la row.
    * @return row
    */
   public int getRow() {
@@ -83,7 +83,7 @@ public class Controller {
 
   /**
    * Pasar las coords a números.
-   * @return StartI (fila)
+   * @return StartI (row)
    */
   public int startI() {
       int rowStart = Integer.parseInt(start.substring(1)) - 1;
@@ -92,7 +92,7 @@ public class Controller {
 
   /**
    * Pasar las coords a números.
-   * @return StartJ (columna)
+   * @return StartJ (colum)
    */
   public int startJ() {
       int colStart = start.charAt(0) - 'A';
@@ -101,7 +101,7 @@ public class Controller {
 
   /**
    * Pasar las coords a números.
-   * @return EndI (fila)
+   * @return EndI (row)
    */
   public int endI() {
       int rowEnd = Integer.parseInt(end.substring(1)) - 1;
@@ -110,7 +110,7 @@ public class Controller {
 
   /**
    * Pasar las coords a números.
-   * @return EndJ (columna)
+   * @return EndJ (colum)
    */
   public int endJ() {
       int colEnd = end.charAt(0) - 'A';
@@ -132,13 +132,13 @@ public class Controller {
    * @return el punto en la matriz.
    */
   public int locate(final String parameters) {
-    String letra = parameters.substring(0, 1);
-      String numero = parameters.substring(1);
+    String letter = parameters.substring(0, 1);
+      String number = parameters.substring(1);
 
-      int columna = letra.charAt(0) - 'A';
-      int fila = Integer.parseInt(numero) - 1;
+      int column = letter.charAt(0) - 'A';
+      int row = Integer.parseInt(number) - 1;
 
-      int position = fila * col + columna;
+      int position = row * col + column;
 
       return position;
   }
@@ -166,40 +166,51 @@ public class Controller {
       return;
         //SET(parameters);
     } else if (commandName.equals("SUM")) {
-      return;
-        //SUM(parameters);
+      String[] range = parameters.split(":");
+      start = range[0];
+      end = range[1];
+
+      ConjuntoFracciones c = new ConjuntoFracciones(1, 1);
+      c.sumRange(this); 
+
     } else if (commandName.equals("MUL")) {
-      return;
-        //MUL(parameters);
+      String[] range = parameters.split(":");
+      start = range[0];
+      end = range[1];
+
+      ConjuntoFracciones c = new ConjuntoFracciones(1, 1);
+      c.multiplyRange(this);
+      }
+
     } else if (commandName.equals("AVR")) {
-        String[] rango = parameters.split(":");
-        start = rango[0];
-        end = rango[1];
+        String[] range = parameters.split(":");
+        start = range[0];
+        end = range[1];
 
         ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
         c.average(this);
 
 
     } else if (commandName.equals("MDN")) {
-        String[] rango = parameters.split(":");
-        start = rango[0];
-        end = rango[1];
+        String[] range = parameters.split(":");
+        start = range[0];
+        end = range[1];
 
         ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
         c.median(this);
 
     } else if (commandName.equals("MIN")) {
-        String[] rango = parameters.split(":");
-        start = rango[0];
-        end = rango[1];
+        String[] range = parameters.split(":");
+        start = range[0];
+        end = range[1];
 
         ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
         c.minimum(this);
 
     } else if (commandName.equals("MAX")) {
-        String[] rango = parameters.split(":");
-        start = rango[0];
-        end = rango[1];
+        String[] range = parameters.split(":");
+        start = range[0];
+        end = range[1];
 
         ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
         c.maximum(this);

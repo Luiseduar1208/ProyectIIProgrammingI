@@ -74,7 +74,53 @@ public class ConjuntoFracciones {
 
     return new ConjuntoFracciones(newNumerador, newDenominador);
   }
+  /**
+   * Suma fracciones en un rango.
+   * @param controller controlador con la matriz.
+   */
+  public void sumRange(final Controller controller) {
+    ConjuntoFracciones[] fractions = loadAndSort(controller);
+    
+    ConjuntoFracciones result = new ConjuntoFracciones(1, 1);
+    
+    for (int i = 0; i < fractions.length; i++) {
+        result = result.sum(fractions[i]);
+    }
+    
+    int destination = controller.getCelDestination();
+    List l = new List();
+    l.addFront(result);
+    controller.getB().add(destination, l);
+  }
+  /**
+   * Multiplica fracciones.
+   * @param other fracción a multiplicar.
+   * @return resultado de la multiplicar.
+   */
+  public ConjuntoFracciones multiply(final ConjuntoFracciones other) {
+    long newNumerador = this.numerador * other.numerador;
+    long newDenominador = this.denominador * other.denominador;
 
+    return new ConjuntoFracciones(newNumerador, newDenominador);
+  }
+  /**
+   * Multiplica fracciones en un rango.
+   * @param controller controlador con la matriz.
+   */
+  public void multiplyRange(final Controller controller) {
+    ConjuntoFracciones[] fractions = loadAndSort(controller);
+    
+    ConjuntoFracciones result = new ConjuntoFracciones(1, 1);
+    
+    for (int i = 0; i < fractions.length; i++) {
+        result = result.multiply(fractions[i]);
+    }
+    
+    int destination = controller.getCelDestination();
+    List l = new List();
+    l.addFront(result);
+    controller.getB().add(destination, l);
+  }
   /**
    * Divide fracciones.
    * @param divider Fracción dividida.
@@ -113,10 +159,10 @@ public class ConjuntoFracciones {
 
     for (int idx = calcStart; idx <= calcEnd; idx++) {
 
-      int fila = idx / col;
-      int columna = idx % col;
+      int row = idx / col;
+      int column = idx % col;
 
-      String[] parts = mtx[fila][columna].split("/");
+      String[] parts = mtx[row][column].split("/");
 
       long num = Long.parseLong(parts[0]);
       long den = Long.parseLong(parts[1]);
