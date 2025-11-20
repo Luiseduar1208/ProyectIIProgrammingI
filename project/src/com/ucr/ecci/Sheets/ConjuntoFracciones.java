@@ -31,6 +31,22 @@ public class ConjuntoFracciones {
 
   }
 
+  /**
+   * Getter del denominador.
+   * @return el denominador
+   * */
+  public long getDenominador() {
+    return denominador;
+  }
+
+  /**
+   * Getter del numerador.
+   * @return el numerador
+   * */
+  public long getNumerador() {
+    return numerador;
+  }
+
   /** Simplifica la fracción al dividir ambos valores entre su MCD. */
   private void simplificar() {
     long mcd = maximoComunDivisor(
@@ -80,13 +96,13 @@ public class ConjuntoFracciones {
    */
   public void sumRange(final Controller controller) {
     ConjuntoFracciones[] fractions = loadAndSort(controller);
-    
+
     ConjuntoFracciones result = new ConjuntoFracciones(1, 1);
-    
+
     for (int i = 0; i < fractions.length; i++) {
         result = result.sum(fractions[i]);
     }
-    
+
     int destination = controller.getCelDestination();
     List l = new List();
     l.addFront(result);
@@ -109,13 +125,13 @@ public class ConjuntoFracciones {
    */
   public void multiplyRange(final Controller controller) {
     ConjuntoFracciones[] fractions = loadAndSort(controller);
-    
+
     ConjuntoFracciones result = new ConjuntoFracciones(1, 1);
-    
+
     for (int i = 0; i < fractions.length; i++) {
         result = result.multiply(fractions[i]);
     }
-    
+
     int destination = controller.getCelDestination();
     List l = new List();
     l.addFront(result);
@@ -288,48 +304,7 @@ public class ConjuntoFracciones {
     controller.getB().add(destine, l);
 
   }
-  /**
-   * Imprime la Hoja.
-   * @param controller controlador con la matriz.
-   */
-  public void printSheet(final Controller controller){
-    String[][] mtx = controller.getiMtx();
-    int rows = controller.getRow();
-    int cols = controller.getCol();
-    
-    int maxWidth = 4;
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            if (mtx[i][j].length() > maxWidth) {
-                maxWidth = mtx[i][j].length();
-            }
-        }
-    }
-    
-    System.out.print("   |");
-    for (int j = 0; j < cols; j++) {
-        char colLetter = (char) ('A' + j);
-        System.out.printf(" %" + maxWidth + "s", colLetter);
-    }
-    System.out.println();
-    
-    System.out.print("---+");
-    for (int j = 0; j < cols; j++) {
-        for (int k = 0; k < maxWidth; k++) {
-            System.out.print("-");
-        }
-        System.out.print(" ");
-    }
-    System.out.println();
-    
-    for (int i = 0; i < rows; i++) {
-        System.out.printf("%2d |", i + 1);
-        for (int j = 0; j < cols; j++) {
-            System.out.printf(" %" + maxWidth + "s", mtx[i][j]);
-        }
-        System.out.println();
-    }
-  }
+
   /** Representación en formato texto. */
   @Override
   public String toString() {
