@@ -142,6 +142,25 @@ public class Controller {
 
       return position;
   }
+  /**
+   * Procesa el comando SET para crear conjuntos de fracciones.
+   * @param parameters nombre del conjunto y lista de celdas
+   */
+  public void setConjunto(final String parameters) {
+    String[] parts = parameters.split(",");
+    String nombre = parts[0];
+    List listaFracciones = new List();
+
+    for (int i = 1; i < parts.length; i++) {
+      String celda = parts[i];
+      int posicion = locate(celda);
+      List listaCelda = b.getAt(posicion);
+      ConjuntoFracciones fraccion = listaCelda.getAt(0);
+      listaFracciones.addBack(fraccion);
+    }
+    int key = nombre.hashCode();
+    b.add(key, listaFracciones);
+  }
 
   /**
    * Corre el comando.
@@ -163,14 +182,22 @@ public class Controller {
       return;
 
     } else if (commandName.equals("SET")) {
-      return;
-        //SET(parameters);
+      setConjunto(parameters);
+    }
     } else if (commandName.equals("SUM")) {
-      return;
-        //SUM(parameters);
+      String[] rango = parameters.split(":");
+      start = rango[0];
+      end = rango[1];
+
+      ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+      c.sumRange(this);
     } else if (commandName.equals("MUL")) {
-      return;
-        //MUL(parameters);
+      String[] rango = parameters.split(":");
+      start = rango[0];
+      end = rango[1];
+
+      ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+      c.multiplyRange(this);
     } else if (commandName.equals("AVR")) {
         String[] rango = parameters.split(":");
         start = rango[0];
@@ -178,8 +205,6 @@ public class Controller {
 
         ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
         c.average(this);
-
-
     } else if (commandName.equals("MDN")) {
         String[] rango = parameters.split(":");
         start = rango[0];

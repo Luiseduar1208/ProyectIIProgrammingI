@@ -74,8 +74,7 @@ public class ConjuntoFracciones {
     }
 
     return tmpA;
-  }
-
+  }  
   /**
    * Suma fracciones.
    * @param other fracción a sumar.
