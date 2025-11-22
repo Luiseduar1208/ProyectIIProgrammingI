@@ -16,6 +16,8 @@ public class Controller {
   private String end;
   /**Árbol binario. */
   private Btree b = new Btree();
+  /**Elementos usados. */
+  private boolean[][] used;
 
 
   /**Cargar la matriz y tomar row y col. */
@@ -31,7 +33,8 @@ public class Controller {
       }
     }
 
-    input.nextLine();
+    used = new boolean[row][col];
+
   }
 
   /** Posición destino para guardar resultados de CEL(). */
@@ -117,14 +120,24 @@ public class Controller {
       return colEnd;
   }
 
-  /**
+
+    /**
    * Procesa el comando.
    * Verifica la linea de comando.
+   * @return el comando a correr (nombre) o "" si no hay más líneas
    */
-  public void commandProcessor() {
-    String line = input.nextLine();
-    commandRun(line);
+  public String commandProcessor() {
+      // Leer la siguiente línea no vacía (ignorar líneas en blanco)
+      while (input.hasNextLine()) {
+          String line = input.nextLine().trim();
+          if (line.isEmpty()) {
+              continue; // saltar líneas vacías
+          }
+          return commandRun(line);
+      }
+      return "";
   }
+
 
   /**
    * Metodo para localizar el lugar.
@@ -133,15 +146,32 @@ public class Controller {
    */
   public int locate(final String parameters) {
     String letra = parameters.substring(0, 1);
-      String numero = parameters.substring(1);
+    String numero = parameters.substring(1);
 
-      int columna = letra.charAt(0) - 'A';
-      int fila = Integer.parseInt(numero) - 1;
+    int columna = letra.charAt(0) - 'A';
+    int fila = Integer.parseInt(numero) - 1;
 
-      int position = fila * col + columna;
+    int position = fila * col + columna;
 
-      return position;
+    return position;
   }
+
+  /**
+   * Borrar la fraccion de la matriz.
+   * @param parameters
+   */
+  public void erase(final String parameters) {
+    String letra = parameters.substring(0, 1);
+    String numero = parameters.substring(1);
+
+    int columna = letra.charAt(0) - 'A';
+    int fila = Integer.parseInt(numero) - 1;
+
+    used[fila][columna] = true;
+  }
+
+
+
   /**
    * Procesa el comando SET para crear conjuntos de fracciones.
    * @param parameters nombre del conjunto y lista de celdas
@@ -152,86 +182,169 @@ public class Controller {
     List listaFracciones = new List();
 
     for (int i = 1; i < parts.length; i++) {
-      String celda = parts[i];
+      String celda = parts[i].trim();
       int posicion = locate(celda);
       List listaCelda = b.getAt(posicion);
-      ConjuntoFracciones fraccion = listaCelda.getAt(0);
-      listaFracciones.addBack(fraccion);
+      if (listaCelda == null) {
+        int fila = posicion / col;
+        int columna = posicion % col;
+        String valor = iMtx[fila][columna];
+        if (valor != null) {
+          ConjuntoFracciones fraccion = parseFraccion(valor);
+          listaFracciones.addBack(fraccion);
+        }
+      } else {
+          ConjuntoFracciones fraccion = listaCelda.getAt(0);
+          if (fraccion != null) {
+            listaFracciones.addBack(fraccion);
+          }
+      }
     }
+
     int key = nombre.hashCode();
     b.add(key, listaFracciones);
   }
 
+
   /**
    * Corre el comando.
    * @param command
+   * @return el nombre del comando
    */
-  private void commandRun(final String command) {
-    String commandWithoutEqual = command.substring(1);
+  private String commandRun(final String command) {
+    if (command == null) {
+        return "";
+    }
+    String line = command.trim();
+    if (line.isEmpty()) {
+        return "";
+    }
+
+    String commandWithoutEqual =
+    line.startsWith("=") ? line.substring(1) : line;
+
     int openParen = commandWithoutEqual.indexOf('(');
     int closeParen = commandWithoutEqual.lastIndexOf(')');
 
+    String commandName;
+    String parameters = "";
 
-    String commandName = commandWithoutEqual.substring(0, openParen);
-    String
-      parameters = commandWithoutEqual.substring(openParen + 1, closeParen);
+    if (openParen == -1 || closeParen == -1 || closeParen < openParen) {
+        commandName = commandWithoutEqual.trim();
+    } else {
+        commandName = commandWithoutEqual.substring(0, openParen).trim();
+        parameters =
+        commandWithoutEqual.substring(openParen + 1, closeParen).trim();
+    }
+
+    if (commandName.isEmpty()) {
+      return "";
+    }
 
     if (commandName.equals("CEL")) {
       int pos = locate(parameters);
       setCelDestination(pos);
-      return;
+      erase(parameters);
 
-    } else if (commandName.equals("SET")) {
-      setConjunto(parameters);
-    }
-    } else if (commandName.equals("SUM")) {
-      String[] rango = parameters.split(":");
-      start = rango[0];
-      end = rango[1];
+      } else if (commandName.equals("SET")) {
+          setConjunto(parameters);
 
-      ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
-      c.sumRange(this);
-    } else if (commandName.equals("MUL")) {
-      String[] rango = parameters.split(":");
-      start = rango[0];
-      end = rango[1];
+      } else if (commandName.equals("SUM")) {
+          String[] rango = parameters.split(":");
+          start = rango[0];
+          end = rango[1];
 
-      ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
-      c.multiplyRange(this);
-    } else if (commandName.equals("AVR")) {
-        String[] rango = parameters.split(":");
-        start = rango[0];
-        end = rango[1];
+          ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+          c.sumRange(this);
 
-        ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
-        c.average(this);
-    } else if (commandName.equals("MDN")) {
-        String[] rango = parameters.split(":");
-        start = rango[0];
-        end = rango[1];
+      } else if (commandName.equals("MUL")) {
+          String[] rango = parameters.split(":");
+          start = rango[0];
+          end = rango[1];
 
-        ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
-        c.median(this);
+          ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+          c.multiplyRange(this);
 
-    } else if (commandName.equals("MIN")) {
-        String[] rango = parameters.split(":");
-        start = rango[0];
-        end = rango[1];
+      } else if (commandName.equals("AVR")) {
+          String[] rango = parameters.split(":");
+          start = rango[0];
+          end = rango[1];
 
-        ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
-        c.minimum(this);
+          ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+          c.average(this);
 
-    } else if (commandName.equals("MAX")) {
-        String[] rango = parameters.split(":");
-        start = rango[0];
-        end = rango[1];
+      } else if (commandName.equals("MDN")) {
+          String[] rango = parameters.split(":");
+          start = rango[0];
+          end = rango[1];
 
-        ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
-        c.maximum(this);
+          ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+          c.median(this);
 
-    } else if (commandName.equals("PRINT")) {
-        b.printAsSheet(row, col);
-    }
+      } else if (commandName.equals("MIN")) {
+          String[] rango = parameters.split(":");
+          start = rango[0];
+          end = rango[1];
 
+          ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+          c.minimum(this);
+
+      } else if (commandName.equals("MAX")) {
+          String[] rango = parameters.split(":");
+          start = rango[0];
+          end = rango[1];
+
+          ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+          c.maximum(this);
+
+      } else if (commandName.equals("PRINT")) {
+          b.printAsSheet(row, col);
+      }
+
+    addUnused();
+
+    return commandName;
   }
+
+
+  /**Añadir al arbol las matrices que no fueron usadas. */
+  public void addUnused() {
+    for (int i = 0; i < row; i++) {
+      for (int j = 0; j < col; j++) {
+
+          if (used[i][j]) {
+            continue;
+          }
+
+          int pos = i * col + j;
+
+          if (b.getAt(pos) == null) {
+              String valor = iMtx[i][j];
+              ConjuntoFracciones frac = parseFraccion(valor.replace(",", ""));
+              List l = new List();
+              l.addFront(frac);
+              b.add(pos, l);
+          }
+      }
+    }
+  }
+
+
+
+  /**
+   * Hacer un parseo de un elemento formado por strings a una fraccion.
+   * @param s
+   * @return la nueva fraccion
+   */
+  private ConjuntoFracciones parseFraccion(final String s) {
+    String clean = s.replace(",", "");
+    String[] partes = clean.split("/");
+    int num = Integer.parseInt(partes[0]);
+    int den = Integer.parseInt(partes[1]);
+    return new ConjuntoFracciones(num, den);
+}
+
+
+
+
 }

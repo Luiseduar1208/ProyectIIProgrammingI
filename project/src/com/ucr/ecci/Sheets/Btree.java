@@ -188,7 +188,7 @@ public class Btree {
       System.out.print("   |");
       for (int i = 0; i < col; i++) {
           char colLetter = (char) ('A' + i);
-          System.out.printf("%4c", colLetter);
+          System.out.printf("%4c ", colLetter);
       }
       System.out.println();
 
@@ -205,7 +205,7 @@ public class Btree {
 
       for (int i = 0; i < array.length; i++) {
           ConjuntoFracciones cf = array[i].getAt(0);
-          System.out.printf("%4s", cf.toString());
+          System.out.printf("%4s ", cf.toString());
 
           if ((i + 1) % col == 0 && i < array.length - 1) {
               System.out.println();

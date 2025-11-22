@@ -7,6 +7,7 @@ public class ConjuntoFracciones {
   /** Denominador de la fracción. Nunca puede ser 0. */
   private long denominador;
 
+
   /**
    * Constructor de la clase.
    * @param numerador Numerador de la fracción.
@@ -74,7 +75,7 @@ public class ConjuntoFracciones {
     }
 
     return tmpA;
-  }  
+  }
   /**
    * Suma fracciones.
    * @param other fracción a sumar.
@@ -177,7 +178,9 @@ public class ConjuntoFracciones {
       int row = idx / col;
       int column = idx % col;
 
-      String[] parts = mtx[row][column].split("/");
+      String valor = mtx[row][column].replace(",", "");
+
+      String[] parts = valor.split("/");
 
       long num = Long.parseLong(parts[0]);
       long den = Long.parseLong(parts[1]);
@@ -214,7 +217,8 @@ public class ConjuntoFracciones {
     }
 
     return arr;
-  }
+}
+
 
   /**
    * Calcula el promedio del conjunto.
