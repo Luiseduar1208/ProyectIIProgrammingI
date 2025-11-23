@@ -12,8 +12,6 @@ ACME S.A. necesita una solución para manejar cálculos financieros con precisi�
 * **Resultados precisos**: Sin errores de redondeo gracias al uso de fracciones
 * **Interfaz de texto**: Fácil integración con sistemas existentes
 
-### Al usar muchas columnas, estas se superpondrán visualmente debido al ancho limitado de la terminal
-
 ## Comandos Disponibles
 
 | Comando | Descripción |
@@ -31,6 +29,8 @@ ACME S.A. necesita una solución para manejar cálculos financieros con precisi�
 
 ## Cómo Usar
 
+## NOTA: Absténgase de utilizar matrices que el ancho exceda al de su pantalla conforme a la terminal
+
 ### Creacion de archivos
 
 ```bash
@@ -47,19 +47,7 @@ javac -d bin src/com/ucr/ecci/Sheets/*.java
 ### Ejecución
 
 ```bash
-java -cp bin com.ucr.ecci.Sheets.Main < tests/0000.txt
-```
-
-```bash
 java -cp bin com.ucr.ecci.Sheets.Main < tests/0001.txt
-```
-
-```bash
-java -cp bin com.ucr.ecci.Sheets.Main < tests/0002.txt
-```
-
-```bash
-java -cp bin com.ucr.ecci.Sheets.Main < tests/0003.txt
 ```
 
 Se puso a comodidad del usuario una serie de casos de prueba en la carpeta **tests**
@@ -90,8 +78,8 @@ java -jar planilla.jar < tests/input-001.txt
 
 **Desarrollado por:**
 
-* Luis Eduardo Hernández - luisedurdo.hernandez@ucr.ac.cr
-* César Pérez - cesar.perezmendoza@ucr.ac.cr
+* Luis Eduardo Hernández - <luisedurdo.hernandez@ucr.ac.cr>
+* César Pérez - <cesar.perezmendoza@ucr.ac.cr>
 
 **Contribuciones Técnicas:**
 

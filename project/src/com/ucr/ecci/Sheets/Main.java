@@ -20,8 +20,8 @@ public final class Main {
 
         if (command.equals("PRINT") || command.isEmpty()) {
             break;
-        }   
-    }  
+        }
+    }
 
     c.addUnused();
 

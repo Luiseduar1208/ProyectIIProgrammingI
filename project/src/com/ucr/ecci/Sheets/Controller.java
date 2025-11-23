@@ -25,7 +25,7 @@ public class Controller {
 
 
   /**Cargar la matriz y tomar row y col. */
-  public void loadMtx() { 
+  public void loadMtx() {
     row = input.nextInt();
     col = input.nextInt();
     input.nextLine();
@@ -508,7 +508,7 @@ public class Controller {
         }
       }
     }
-    
+
     // Encabezado
     System.out.print("   |");
     for (int i = 0; i < col; i++) {
