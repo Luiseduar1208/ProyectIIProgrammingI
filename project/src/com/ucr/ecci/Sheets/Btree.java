@@ -205,8 +205,11 @@ public class Btree {
 
       for (int i = 0; i < array.length; i++) {
           ConjuntoFracciones cf = array[i].getAt(0);
-          System.out.printf("%4s ", cf.toString());
-
+          if (cf != null){
+            System.out.printf("%4s ", cf.toString());
+          } else {
+            System.out.printf("%4s ", "0/1");
+          }
           if ((i + 1) % col == 0 && i < array.length - 1) {
               System.out.println();
               count++;

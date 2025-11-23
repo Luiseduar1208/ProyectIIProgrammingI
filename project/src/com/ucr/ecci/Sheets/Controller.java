@@ -166,43 +166,45 @@ public class Controller {
 
     int columna = letra.charAt(0) - 'A';
     int fila = Integer.parseInt(numero) - 1;
-
-    used[fila][columna] = true;
+    
+    if (fila >= 0 && fila < row && columna >= 0 && columna < col) {
+      used[fila][columna] = true;
+    }
   }
 
 
 
   /**
    * Procesa el comando SET para crear conjuntos de fracciones.
-   * @param parameters nombre del conjunto y lista de celdas
+   * @param parameters nombre del conjunto y list de celdas
    */
   public void setConjunto(final String parameters) {
     String[] parts = parameters.split(",");
     String nombre = parts[0];
-    List listaFracciones = new List();
+    List listFracciones = new List();
 
     for (int i = 1; i < parts.length; i++) {
       String celda = parts[i].trim();
       int posicion = locate(celda);
-      List listaCelda = b.getAt(posicion);
-      if (listaCelda == null) {
+      List listCelda = b.getAt(posicion);
+      if (listCelda == null) {
         int fila = posicion / col;
         int columna = posicion % col;
         String valor = iMtx[fila][columna];
         if (valor != null) {
           ConjuntoFracciones fraccion = parseFraccion(valor);
-          listaFracciones.addBack(fraccion);
+          listFracciones.addBack(fraccion);
         }
       } else {
-          ConjuntoFracciones fraccion = listaCelda.getAt(0);
+          ConjuntoFracciones fraccion = listCelda.getAt(0);
           if (fraccion != null) {
-            listaFracciones.addBack(fraccion);
+            listFracciones.addBack(fraccion);
           }
       }
     }
 
     int key = nombre.hashCode();
-    b.add(key, listaFracciones);
+    b.add(key, listFracciones);
   }
 
 
@@ -246,67 +248,210 @@ public class Controller {
       setCelDestination(pos);
       erase(parameters);
 
-      } else if (commandName.equals("SET")) {
-          setConjunto(parameters);
-
-      } else if (commandName.equals("SUM")) {
-          String[] rango = parameters.split(":");
-          start = rango[0];
-          end = rango[1];
-
+    } else if (commandName.equals("SET")) {
+      String[] parts = parameters.split(",");
+      if (parts.length > 0) {
+        String setName = parts[0].trim();
+        List fractionList = new List();
+        
+        for (int i = 1; i < parts.length; i++) {
+          String cell = parts[i].trim();
+          int pos = locate(cell);
+          List cellList = b.getAt(pos);
+          if (cellList != null) {
+            ConjuntoFracciones frac = cellList.getAt(0);
+            if (frac != null) {
+              fractionList.addBack(frac);
+            }
+          } else {
+            int fila = pos / col;
+            int columna = pos % col;
+            String valor = iMtx[fila][columna];
+            if (valor != null) {
+              ConjuntoFracciones fraccion = parseFraccion(valor);
+              fractionList.addBack(fraccion);
+            }
+          }
+        }
+        
+        int key = setName.hashCode();
+        b.add(key, fractionList);
+      } 
+    } else if (commandName.equals("SUM")) {
+      if (parameters.contains(":")) {
+        String[] range = parameters.split(":");
+        if (range.length == 2) {
+          start = range[0];
+          end = range[1];
           ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
           c.sumRange(this);
-
-      } else if (commandName.equals("MUL")) {
-          String[] rango = parameters.split(":");
-          start = rango[0];
-          end = rango[1];
-
+        }
+      } else {
+        int key = parameters.hashCode();
+        List list = b.getAt(key);
+        if (list != null && celDestination != -1) {
+          ConjuntoFracciones sum = new ConjuntoFracciones(0, 1);
+          int i = 0;
+          while (true) {
+            ConjuntoFracciones frac = list.getAt(i);
+            if (frac == null) break;
+            sum = sum.sum(frac);
+            i++;
+          }
+          List resultList = new List();
+          resultList.addFront(sum);
+          b.add(celDestination, resultList);
+        }
+      }
+    } else if (commandName.equals("MUL")) {
+      if (parameters.contains(":")) {
+        String[] range = parameters.split(":");
+        if (range.length == 2) {
+          start = range[0];
+          end = range[1];
           ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
           c.multiplyRange(this);
-
-      } else if (commandName.equals("AVR")) {
-          String[] rango = parameters.split(":");
-          start = rango[0];
-          end = rango[1];
-
+        }
+      } else {
+        int key = parameters.hashCode();
+        List list = b.getAt(key);
+        if (list != null && celDestination != -1) {
+          ConjuntoFracciones product = new ConjuntoFracciones(1, 1);
+          int i = 0;
+          while (true) {
+            ConjuntoFracciones frac = list.getAt(i);
+            if (frac == null) break;
+            product = product.multiply(frac);
+            i++;
+          }
+          List resultList = new List();
+          resultList.addFront(product);
+          b.add(celDestination, resultList);
+        }
+      }
+    } else if (commandName.equals("AVR")) {
+      if (parameters.contains(":")) {
+        String[] range = parameters.split(":");
+        if (range.length == 2) {
+          start = range[0];
+          end = range[1];
           ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
           c.average(this);
-
-      } else if (commandName.equals("MDN")) {
-          String[] rango = parameters.split(":");
-          start = rango[0];
-          end = rango[1];
-
-          ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
-          c.median(this);
-
-      } else if (commandName.equals("MIN")) {
-          String[] rango = parameters.split(":");
-          start = rango[0];
-          end = rango[1];
-
+        }
+      } else {
+        int key = parameters.hashCode();
+        List list = b.getAt(key);
+        if (list != null && celDestination != -1) {
+          ConjuntoFracciones sum = new ConjuntoFracciones(0, 1);
+          int count = 0;
+          int i = 0;
+          while (true) {
+            ConjuntoFracciones frac = list.getAt(i);
+            if (frac == null) break;
+            sum = sum.sum(frac);
+            count++;
+            i++;
+          }
+          ConjuntoFracciones average = sum.divide(new ConjuntoFracciones(count, 1));
+          List resultList = new List();
+          resultList.addFront(average);
+          b.add(celDestination, resultList);
+        }
+      }
+    } else if (commandName.equals("MIN")) {
+      if (parameters.contains(":")) {
+        String[] range = parameters.split(":");
+        if (range.length == 2) {
+          start = range[0];
+          end = range[1];
           ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
           c.minimum(this);
-
-      } else if (commandName.equals("MAX")) {
-          String[] rango = parameters.split(":");
+        } 
+      } else {
+        int key = parameters.hashCode();
+        List list = b.getAt(key);
+        if (list != null && celDestination != -1) {
+          ConjuntoFracciones min = list.getAt(0);
+          int i = 1;
+          while (true) {
+            ConjuntoFracciones frac = list.getAt(i);
+            if (frac == null) break;
+            long comp = min.getNumerador() * frac.getDenominador() - frac.getNumerador() * min.getDenominador();
+            if (comp > 0) {
+              min = frac;
+            }
+            i++;
+          }
+          List resultList = new List();
+          resultList.addFront(min);
+          b.add(celDestination, resultList);
+        }
+      }
+    } else if (commandName.equals("MAX")) {
+      if (parameters.contains(":")) {
+        String[] rango = parameters.split(":");
+        if (rango.length == 2) {
           start = rango[0];
           end = rango[1];
-
           ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
           c.maximum(this);
-
-      } else if (commandName.equals("PRINT")) {
-          b.printAsSheet(row, col);
+        }
+      } else {
+        int key = parameters.hashCode();
+        List list = b.getAt(key);
+        if (list != null && celDestination != -1) {
+          ConjuntoFracciones max = list.getAt(0);
+          int i = 1;
+          while (true) {
+            ConjuntoFracciones frac = list.getAt(i);
+            if (frac == null) break;
+            long comp = max.getNumerador() * frac.getDenominador() - frac.getNumerador() * max.getDenominador();
+            if (comp < 0) {
+              max = frac;
+            }
+            i++;
+          }
+          List resultList = new List();
+          resultList.addFront(max);
+          b.add(celDestination, resultList);
+        }
       }
+    } else if (commandName.equals("PRINT")) {
+      if (parameters.isEmpty()){
+        b.printAsSheet(row, col);          
+      } else {
+        printConjunto(parameters);
+      }
+
+    }
 
     addUnused();
 
     return commandName;
   }
-
-
+  /**
+   * Imprime un conjunto de fracciones separadas por comas.
+   * @param nombreConjunto nombre del conjunto a imprimir
+   */
+  public void printConjunto(final String nombreConjunto) {
+    int key = nombreConjunto.hashCode();
+    List lista = b.getAt(key);
+    if (lista != null) {
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (true) {
+            ConjuntoFracciones fraccion = lista.getAt(i);
+            if (fraccion == null) break;
+            
+            if (i > 0) {
+                sb.append(", ");
+            }
+            sb.append(fraccion.toString());
+            i++;
+        }
+        System.out.println(sb.toString());
+    }
+  }
   /**Añadir al arbol las matrices que no fueron usadas. */
   public void addUnused() {
     for (int i = 0; i < row; i++) {
