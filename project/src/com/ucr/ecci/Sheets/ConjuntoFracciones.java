@@ -97,7 +97,7 @@ public class ConjuntoFracciones {
   public void sumRange(final Controller controller) {
     ConjuntoFracciones[] fractions = loadAndSort(controller);
 
-    ConjuntoFracciones result = new ConjuntoFracciones(1, 1);
+    ConjuntoFracciones result = new ConjuntoFracciones(0, 1);
 
     for (int i = 0; i < fractions.length; i++) {
         result = result.sum(fractions[i]);
@@ -106,7 +106,12 @@ public class ConjuntoFracciones {
     int destination = controller.getCelDestination();
     List l = new List();
     l.addFront(result);
-    controller.getB().add(destination, l);
+    controller.getB().setAt(destination, l);
+
+    // Actualizar la matriz original
+    int row = destination / controller.getCol();
+    int col = destination % controller.getCol();
+    controller.getiMtx()[row][col] = result.toString();
   }
   /**
    * Multiplica fracciones.
@@ -135,7 +140,12 @@ public class ConjuntoFracciones {
     int destination = controller.getCelDestination();
     List l = new List();
     l.addFront(result);
-    controller.getB().add(destination, l);
+    controller.getB().setAt(destination, l);
+
+    // Actualizar la matriz original
+    int row = destination / controller.getCol();
+    int col = destination % controller.getCol();
+    controller.getiMtx()[row][col] = result.toString();
   }
   /**
    * Divide fracciones.
@@ -162,37 +172,42 @@ public class ConjuntoFracciones {
   private ConjuntoFracciones[] loadAndSort(final Controller controller) {
 
     String[][] mtx = controller.getiMtx();
-    int col = controller.getCol();
 
-    int calcStart = controller.startI() * col + controller.startJ();
-    int calcEnd = controller.endI() * col + controller.endJ();
-    int count = calcEnd - calcStart + 1;
+    int rowStart = controller.startI();
+    int rowEnd = controller.endI();
+    int colStart = controller.startJ();
+    int colEnd = controller.endJ();
+
+    // Calcular cuántas celdas hay en el rango rectangular
+    int rowCount = rowEnd - rowStart + 1;
+    int colCount = colEnd - colStart + 1;
+    int count = rowCount * colCount;
 
     ConjuntoFracciones[] arr = new ConjuntoFracciones[count];
     double[] decimal = new double[count];
 
     int index = 0;
 
-    for (int idx = calcStart; idx <= calcEnd; idx++) {
+    // Iterar por filas y columnas del rango
+    for (int i = rowStart; i <= rowEnd; i++) {
+      for (int j = colStart; j <= colEnd; j++) {
+        String valor = mtx[i][j].replace(",", "");
 
-      int row = idx / col;
-      int column = idx % col;
+        String[] parts = valor.split("/");
 
-      String valor = mtx[row][column].replace(",", "");
+        long num = Long.parseLong(parts[0]);
+        long den = Long.parseLong(parts[1]);
 
-      String[] parts = valor.split("/");
+        ConjuntoFracciones f = new ConjuntoFracciones(num, den);
 
-      long num = Long.parseLong(parts[0]);
-      long den = Long.parseLong(parts[1]);
+        arr[index] = f;
+        decimal[index] = (double) num / den;
 
-      ConjuntoFracciones f = new ConjuntoFracciones(num, den);
-
-      arr[index] = f;
-      decimal[index] = (double) num / den;
-
-      index++;
+        index++;
+      }
     }
 
+    // Ordenar usando bubble sort
     int n = arr.length;
     for (int i = 0; i < n - 1; i++) {
       boolean swapped = false;
@@ -217,7 +232,7 @@ public class ConjuntoFracciones {
     }
 
     return arr;
-}
+  }
 
 
   /**
@@ -225,26 +240,30 @@ public class ConjuntoFracciones {
    *
    * @param controller controlador con la matriz.
    */
-  public void average(final Controller controller) {
+public void average(final Controller controller) {
 
     ConjuntoFracciones[] arr = loadAndSort(controller);
-
     ConjuntoFracciones acumulado = new ConjuntoFracciones(0, 1);
 
     for (int i = 0; i < arr.length; i++) {
       ConjuntoFracciones f = arr[i];
       acumulado = acumulado.sum(f);
+
     }
 
     ConjuntoFracciones divisor = new ConjuntoFracciones(arr.length, 1);
-
     ConjuntoFracciones average = acumulado.divide(divisor);
+
     int destine = controller.getCelDestination();
 
     List l = new List();
     l.addFront(average);
-    controller.getB().add(destine, l);
-  }
+    controller.getB().setAt(destine, l);
+
+    int row = destine / controller.getCol();
+    int col = destine % controller.getCol();
+    controller.getiMtx()[row][col] = average.toString();
+}
 
   /**
    * Calcula la mediana.
@@ -271,7 +290,14 @@ public class ConjuntoFracciones {
 
     List l = new List();
     l.addFront(median);
-    controller.getB().add(destine, l);
+
+    controller.getB().setAt(destine, l);
+
+    // Actualizar la matriz original
+    int row = destine / controller.getCol();
+    int col = destine % controller.getCol();
+
+    controller.getiMtx()[row][col] = median.toString();
   }
 
   /**
@@ -287,7 +313,11 @@ public class ConjuntoFracciones {
 
     List l = new List();
     l.addFront(max);
-    controller.getB().add(destine, l);
+    controller.getB().setAt(destine, l);
+    // Actualizar la matriz original
+    int row = destine / controller.getCol();
+    int col = destine % controller.getCol();
+    controller.getiMtx()[row][col] = max.toString();
 
   }
 
@@ -304,7 +334,12 @@ public class ConjuntoFracciones {
 
     List l = new List();
     l.addFront(min);
-    controller.getB().add(destine, l);
+    controller.getB().setAt(destine, l);
+
+    // Actualizar la matriz original
+    int row = destine / controller.getCol();
+    int col = destine % controller.getCol();
+    controller.getiMtx()[row][col] = min.toString();
 
   }
 

@@ -20,6 +20,7 @@ public final class Main {
       String command = c.commandProcessor();
 
       if (command.equals("PRINT")) {
+        c.addUnused();
         break;
       }
     }

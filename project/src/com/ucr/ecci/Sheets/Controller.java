@@ -166,12 +166,10 @@ public class Controller {
 
     int columna = letra.charAt(0) - 'A';
     int fila = Integer.parseInt(numero) - 1;
-    
     if (fila >= 0 && fila < row && columna >= 0 && columna < col) {
       used[fila][columna] = true;
     }
   }
-
 
 
   /**
@@ -247,13 +245,12 @@ public class Controller {
       int pos = locate(parameters);
       setCelDestination(pos);
       erase(parameters);
-
     } else if (commandName.equals("SET")) {
       String[] parts = parameters.split(",");
       if (parts.length > 0) {
         String setName = parts[0].trim();
         List fractionList = new List();
-        
+
         for (int i = 1; i < parts.length; i++) {
           String cell = parts[i].trim();
           int pos = locate(cell);
@@ -273,10 +270,10 @@ public class Controller {
             }
           }
         }
-        
+
         int key = setName.hashCode();
         b.add(key, fractionList);
-      } 
+      }
     } else if (commandName.equals("SUM")) {
       if (parameters.contains(":")) {
         String[] range = parameters.split(":");
@@ -294,25 +291,32 @@ public class Controller {
           int i = 0;
           while (true) {
             ConjuntoFracciones frac = list.getAt(i);
-            if (frac == null) break;
+            if (frac == null) {
+              break;
+            }
             sum = sum.sum(frac);
             i++;
           }
           List resultList = new List();
           resultList.addFront(sum);
           b.add(celDestination, resultList);
+          // Actualizar matriz
+          int fila = celDestination / col;
+          int columna = celDestination % col;
+          iMtx[fila][columna] = sum.toString();
         }
       }
     } else if (commandName.equals("MUL")) {
-      if (parameters.contains(":")) {
-        String[] range = parameters.split(":");
-        if (range.length == 2) {
-          start = range[0];
-          end = range[1];
-          ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
-          c.multiplyRange(this);
-        }
-      } else {
+  if (parameters.contains(":")) {
+    String[] range = parameters.split(":");
+    if (range.length == 2) {
+      start = range[0];
+      end = range[1];
+      ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+      c.multiplyRange(this);
+
+    }
+  } else {
         int key = parameters.hashCode();
         List list = b.getAt(key);
         if (list != null && celDestination != -1) {
@@ -320,7 +324,9 @@ public class Controller {
           int i = 0;
           while (true) {
             ConjuntoFracciones frac = list.getAt(i);
-            if (frac == null) break;
+            if (frac == null) {
+              break;
+            }
             product = product.multiply(frac);
             i++;
           }
@@ -329,16 +335,22 @@ public class Controller {
           b.add(celDestination, resultList);
         }
       }
-    } else if (commandName.equals("AVR")) {
-      if (parameters.contains(":")) {
-        String[] range = parameters.split(":");
-        if (range.length == 2) {
-          start = range[0];
-          end = range[1];
+
+} else if (commandName.equals("AVR")) {
+    if (parameters.contains(":")) {
+      String[] range = parameters.split(":");
+      if (range.length == 2) {
+        start = range[0];
+        end = range[1];
+        try {
           ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
           c.average(this);
+        } catch (Exception e) {
+
+          e.printStackTrace();
         }
-      } else {
+      }
+    } else {
         int key = parameters.hashCode();
         List list = b.getAt(key);
         if (list != null && celDestination != -1) {
@@ -347,15 +359,80 @@ public class Controller {
           int i = 0;
           while (true) {
             ConjuntoFracciones frac = list.getAt(i);
-            if (frac == null) break;
+            if (frac == null) {
+              break;
+            }
             sum = sum.sum(frac);
             count++;
             i++;
           }
-          ConjuntoFracciones average = sum.divide(new ConjuntoFracciones(count, 1));
+          ConjuntoFracciones average =
+            sum.divide(new ConjuntoFracciones(count, 1));
           List resultList = new List();
           resultList.addFront(average);
           b.add(celDestination, resultList);
+        }
+      }
+  } else if (commandName.equals("MDN") || commandName.equals("MED")) {
+      if (parameters.contains(":")) {
+        String[] range = parameters.split(":");
+        if (range.length == 2) {
+          start = range[0];
+          end = range[1];
+          ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+          c.median(this);
+        }
+      } else {
+        int key = parameters.hashCode();
+        List list = b.getAt(key);
+        if (list != null && celDestination != -1) {
+          int count = 0;
+          int i = 0;
+          while (list.getAt(i) != null) {
+            count++;
+            i++;
+          }
+
+          ConjuntoFracciones[] arr = new ConjuntoFracciones[count];
+          double[] decimals = new double[count];
+
+          for (int j = 0; j < count; j++) {
+            arr[j] = list.getAt(j);
+            decimals[j] =
+              (double) arr[j].getNumerador() / arr[j].getDenominador();
+          }
+
+          for (int a = 0; a < count - 1; a++) {
+            for (int b = 0; b < count - 1 - a; b++) {
+              if (decimals[b] > decimals[b + 1]) {
+                double tmpD = decimals[b];
+                decimals[b] = decimals[b + 1];
+                decimals[b + 1] = tmpD;
+
+                ConjuntoFracciones tmpF = arr[b];
+                arr[b] = arr[b + 1];
+                arr[b + 1] = tmpF;
+              }
+            }
+          }
+
+          ConjuntoFracciones median;
+          if (count % 2 == 0) {
+            ConjuntoFracciones a = arr[(count - 1) / 2];
+            ConjuntoFracciones b = arr[count / 2];
+            ConjuntoFracciones two = new ConjuntoFracciones(2, 1);
+            median = a.sum(b).divide(two);
+          } else {
+            median = arr[count / 2];
+          }
+
+          List resultList = new List();
+          resultList.addFront(median);
+          b.add(celDestination, resultList);
+          // Actualizar matriz
+          int fila = celDestination / col;
+          int columna = celDestination % col;
+          iMtx[fila][columna] = median.toString();
         }
       }
     } else if (commandName.equals("MIN")) {
@@ -366,7 +443,7 @@ public class Controller {
           end = range[1];
           ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
           c.minimum(this);
-        } 
+        }
       } else {
         int key = parameters.hashCode();
         List list = b.getAt(key);
@@ -375,8 +452,11 @@ public class Controller {
           int i = 1;
           while (true) {
             ConjuntoFracciones frac = list.getAt(i);
-            if (frac == null) break;
-            long comp = min.getNumerador() * frac.getDenominador() - frac.getNumerador() * min.getDenominador();
+            if (frac == null) {
+              break;
+            }
+            long comp = min.getNumerador() * frac.getDenominador()
+              - frac.getNumerador() * min.getDenominador();
             if (comp > 0) {
               min = frac;
             }
@@ -385,6 +465,10 @@ public class Controller {
           List resultList = new List();
           resultList.addFront(min);
           b.add(celDestination, resultList);
+          // Actualizar matriz
+          int fila = celDestination / col;
+          int columna = celDestination % col;
+          iMtx[fila][columna] = min.toString();
         }
       }
     } else if (commandName.equals("MAX")) {
@@ -404,8 +488,11 @@ public class Controller {
           int i = 1;
           while (true) {
             ConjuntoFracciones frac = list.getAt(i);
-            if (frac == null) break;
-            long comp = max.getNumerador() * frac.getDenominador() - frac.getNumerador() * max.getDenominador();
+            if (frac == null) {
+              break;
+            }
+            long comp = max.getNumerador() * frac.getDenominador()
+              - frac.getNumerador() * max.getDenominador();
             if (comp < 0) {
               max = frac;
             }
@@ -414,21 +501,58 @@ public class Controller {
           List resultList = new List();
           resultList.addFront(max);
           b.add(celDestination, resultList);
+          // Actualizar matriz
+          int fila = celDestination / col;
+          int columna = celDestination % col;
+          iMtx[fila][columna] = max.toString();
         }
       }
     } else if (commandName.equals("PRINT")) {
-      if (parameters.isEmpty()){
-        b.printAsSheet(row, col);          
+      if (parameters.isEmpty()) {
+        printMatrix();
       } else {
         printConjunto(parameters);
       }
 
     }
 
-    addUnused();
-
     return commandName;
   }
+
+  /**
+   * Imprime la matriz usando los valores del árbol.
+   */
+  public void printMatrix() {
+    // Encabezado
+    System.out.print("   |");
+    for (int i = 0; i < col; i++) {
+        char colLetter = (char) ('A' + i);
+        System.out.printf("%4c ", colLetter);
+    }
+    System.out.println();
+
+    // Línea separadora
+    System.out.print("---+");
+    for (int i = 0; i < col; i++) {
+        System.out.print("---- ");
+    }
+    System.out.println();
+
+    // Contenido - IMPRIMIR DESDE iMtx
+    for (int i = 0; i < row; i++) {
+      System.out.printf("%3d|", i + 1);
+      for (int j = 0; j < col; j++) {
+        String valor = iMtx[i][j].replace(",", "");
+        String[] parts = valor.split("/");
+        long num = Long.parseLong(parts[0]);
+        long den = Long.parseLong(parts[1]);
+        ConjuntoFracciones cf = new ConjuntoFracciones(num, den);
+        System.out.printf("%4s ", cf.toString());
+      }
+      System.out.println();
+    }
+}
+
   /**
    * Imprime un conjunto de fracciones separadas por comas.
    * @param nombreConjunto nombre del conjunto a imprimir
@@ -441,8 +565,10 @@ public class Controller {
         int i = 0;
         while (true) {
             ConjuntoFracciones fraccion = lista.getAt(i);
-            if (fraccion == null) break;
-            
+            if (fraccion == null) {
+              break;
+            }
+
             if (i > 0) {
                 sb.append(", ");
             }
@@ -472,7 +598,7 @@ public class Controller {
           }
       }
     }
-  }
+}
 
 
 
@@ -487,9 +613,6 @@ public class Controller {
     int num = Integer.parseInt(partes[0]);
     int den = Integer.parseInt(partes[1]);
     return new ConjuntoFracciones(num, den);
-}
-
-
-
+  }
 
 }
