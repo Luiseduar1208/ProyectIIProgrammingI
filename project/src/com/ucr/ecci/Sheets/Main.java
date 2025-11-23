@@ -11,21 +11,27 @@ public final class Main {
    * @param args
    */
   public static void main(final String[] args) {
-
     Controller c = new Controller();
     c.loadMtx();
 
+    // Primero ejecutar todos los comandos excepto PRINT
     while (true) {
+        String command = c.commandProcessor();
 
-      String command = c.commandProcessor();
-
-      if (command.equals("PRINT")) {
-        c.addUnused();
-        break;
-      }
+        if (command.equals("PRINT") || command.isEmpty()) {
+            break;
+        }
     }
 
+    c.addUnused();
+
+    while (true) {
+        String command = c.commandProcessor();
+
+        if (command.isEmpty()) {
+            break;
+        }
+    }
   }
-  private Main() {
-  }
+  private Main() { }
 }

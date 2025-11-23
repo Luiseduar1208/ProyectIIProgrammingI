@@ -175,48 +175,4 @@ public class Btree {
     /**Valor. */
       private int value = 0;
   }
-
-  /**
-   * Impresion del árbol en estilo de matriz.
-   * @param col
-   * @param row
-   */
-  public void printAsSheet(final int row, final int col) {
-      List[] array = toArrayInOrder();
-
-      // Encabezado
-      System.out.print("   |");
-      for (int i = 0; i < col; i++) {
-          char colLetter = (char) ('A' + i);
-          System.out.printf("%4c ", colLetter);
-      }
-      System.out.println();
-
-      // Línea separadora
-      System.out.print("---+");
-      for (int i = 0; i < col; i++) {
-          System.out.print("---- ");
-      }
-      System.out.println();
-
-      // Contenido
-      int count = 1;
-      System.out.printf("%3d|", count);
-
-      for (int i = 0; i < array.length; i++) {
-          ConjuntoFracciones cf = array[i].getAt(0);
-          if (cf != null) {
-            System.out.printf("%4s ", cf.toString());
-          } else {
-            System.out.printf("%4s ", "0/1");
-          }
-          if ((i + 1) % col == 0 && i < array.length - 1) {
-              System.out.println();
-              count++;
-              System.out.printf("%3d|", count);
-          }
-      }
-      System.out.println();
-  }
-
 }

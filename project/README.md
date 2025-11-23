@@ -21,13 +21,19 @@ ACME S.A. necesita una solución para manejar cálculos financieros con precisi�
 | `=SUM(rango)` | Suma un rango o conjunto |
 | `=MUL(rango)` | Multiplica un rango o conjunto |
 | `=AVR(rango)` | Calcula el promedio |
-| `=MDN(rango)` | Calcula la mediana |
+| `=MDN(rango)` | Calcula la mediana y lo ordena en la hoja de cálculo final |
 | `=MIN(rango)` | Encuentra el valor mínimo |
 | `=MAX(rango)` | Encuentra el valor máximo |
 | `=PRINT()` | Muestra toda la hoja |
 | `=PRINT(conjunto)` | Muestra un conjunto |
 
 ## Cómo Usar
+
+### Creacion de archivos
+
+```bash
+mkdir bin build
+```
 
 ### Compilación
 
@@ -39,8 +45,10 @@ javac -d bin src/com/ucr/ecci/Sheets/*.java
 ### Ejecución
 
 ```bash
-java -cp bin com.ucr.ecci.Sheets.Main < tests/input-001.txt
+java -cp bin com.ucr.ecci.Sheets.Main < tests/0001.txt
 ```
+
+Se puso a comodidad del usuario una serie de casos de prueba en la carpeta **tests**
 
 ### Crear Ejecutable JAR
 
@@ -68,8 +76,9 @@ java -jar planilla.jar < tests/input-001.txt
 
 **Desarrollado por:**
 
-* César Pérez - cesar.perezmendoza@ucr.ac.cr
 * Luis Eduardo Hernández - luisedurdo.hernandez@ucr.ac.cr
+* César Pérez - cesar.perezmendoza@ucr.ac.cr
+
 
 **Contribuciones Técnicas:**
 
@@ -78,4 +87,4 @@ java -jar planilla.jar < tests/input-001.txt
 **Curso:** CI-0112 - Programación 1
 
 **Universidad de Costa Rica**
-**Segundo Semestre 2024**
+**Segundo Semestre 2025**

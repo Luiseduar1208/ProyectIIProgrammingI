@@ -154,10 +154,6 @@ public class ConjuntoFracciones {
    */
   public ConjuntoFracciones divide(final ConjuntoFracciones divider) {
 
-    if (divider.numerador == 0) {
-      throw new ArithmeticException("No se puede dividir entre cero");
-    }
-
     long newNumerador = this.numerador * divider.denominador;
     long newDenominador = this.denominador * divider.numerador;
 
@@ -270,35 +266,50 @@ public void average(final Controller controller) {
    * @param controller controlador con la matriz.
    */
   public void median(final Controller controller) {
-
     ConjuntoFracciones[] arr = loadAndSort(controller);
     int n = arr.length;
+
+    // Calculo mediana como tal
     ConjuntoFracciones median = new ConjuntoFracciones(0, 1);
     if (n % 2 == 0) {
-
       ConjuntoFracciones a = arr[(n - 1) / 2];
       ConjuntoFracciones b = arr[n / 2];
-
       ConjuntoFracciones two = new ConjuntoFracciones(2, 1);
       median = a.sum(b).divide(two);
-
     } else {
       median = arr[n / 2];
     }
+    //Ordenamiento de la mediana
+    int rowStart = controller.startI();
+    int rowEnd = controller.endI();
+    int colStart = controller.startJ();
+    int colEnd = controller.endJ();
+    String[][] mtx = controller.getiMtx();
+
+    int index = 0;
+    for (int i = rowStart; i <= rowEnd; i++) {
+      for (int j = colStart; j <= colEnd; j++) {
+        if (index < arr.length) {
+          mtx[i][j] = arr[index].toString();
+
+          int pos = i * controller.getCol() + j;
+          List l = new List();
+          l.addFront(arr[index]);
+          controller.getB().setAt(pos, l);
+
+          index++;
+        }
+      }
+    }
 
     int destine = controller.getCelDestination();
-
     List l = new List();
     l.addFront(median);
 
-    controller.getB().setAt(destine, l);
-
-    // Actualizar la matriz original
     int row = destine / controller.getCol();
     int col = destine % controller.getCol();
-
     controller.getiMtx()[row][col] = median.toString();
-  }
+}
 
   /**
    * Calcula el valor máximo del conjunto.
