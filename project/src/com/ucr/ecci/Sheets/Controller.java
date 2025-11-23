@@ -25,7 +25,7 @@ public class Controller {
 
 
   /**Cargar la matriz y tomar row y col. */
-  public void loadMtx() {
+  public void loadMtx() { 
     row = input.nextInt();
     col = input.nextInt();
     input.nextLine();
@@ -497,6 +497,18 @@ public class Controller {
    * Imprime la matriz usando los valores del árbol.
    */
   public void printMatrix() {
+    maxWidth = 0;
+    for (int i = 0; i < row; i++) {
+      for (int j = 0; j < col; j++) {
+        if (iMtx[i][j] != null) {
+          int len = iMtx[i][j].length();
+          if (len > maxWidth) {
+            maxWidth = len;
+          }
+        }
+      }
+    }
+    
     // Encabezado
     System.out.print("   |");
     for (int i = 0; i < col; i++) {

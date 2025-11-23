@@ -3,7 +3,7 @@ package com.ucr.ecci.Sheets;
  * Proyecto II CI-0112. Organización fracciones en hoja de cálculo.
  * @author Luis Eduardo Hernández Rojas
  * @author César Pérez Mendoza
- * @version 2.0
+ * @version 2.1
  */
 public final class Main {
   /**
@@ -20,8 +20,8 @@ public final class Main {
 
         if (command.equals("PRINT") || command.isEmpty()) {
             break;
-        }
-    }
+        }   
+    }  
 
     c.addUnused();
 

@@ -1,0 +1,931 @@
+class Btree DO
+    class Node DO
+        int key;
+        List treeData;
+        Node left;
+        Node right;
+
+        Node(int key, List data) DO
+            this.treeData = data;
+            this.key = key;
+            this.left = null;
+            this.right = null;
+        END
+
+        int getKey() DO return key; END
+        List getTreeData() DO return treeData; END
+        Node getLeft() DO return left; END
+        Node getRight() DO return right; END
+
+        void setTreeData(List treeData) DO this.treeData = treeData; END
+        void setLeft(Node left) DO this.left = left; END
+        void setRight(Node right) DO this.right = right; END
+    END CLASS
+
+    int count;
+    Node root;
+
+    Btree() DO
+        count = 0;
+        root = null;
+    END
+
+    boolean isEmpty() DO
+        if (count == 0) DO
+            return true;
+        END
+        return false;
+    END
+
+    void add(int key, List data) DO
+        if (isEmpty()) DO
+            Node node = new Node(key, data);
+            root = node;
+            count++;
+        END else DO
+            Node tmp = root;
+            while (tmp != null) DO
+                if (key < tmp.getKey()) DO
+                    if (tmp.getLeft() == null) DO
+                        Node node = new Node(key, data);
+                        tmp.setLeft(node);
+                        count++;
+                        break;
+                    END else DO
+                        tmp = tmp.getLeft();
+                    END
+                END else if (key > tmp.getKey()) DO
+                    if (tmp.getRight() == null) DO
+                        Node node = new Node(key, data);
+                        tmp.setRight(node);
+                        count++;
+                        break;
+                    END else DO
+                        tmp = tmp.getRight();
+                    END
+                END else DO
+                    break;
+                END
+            END
+        END
+    END
+
+    List getAt(int key) DO
+        List treeData = null;
+        if (!isEmpty()) DO
+            Node tmp = root;
+            while (tmp != null) DO
+                if (key < tmp.getKey()) DO
+                    tmp = tmp.getLeft();
+                END else if (key > tmp.getKey()) DO
+                    tmp = tmp.getRight();
+                END else DO
+                    treeData = tmp.getTreeData();
+                    break;
+                END
+            END
+        END
+        return treeData;
+    END
+
+    void setAt(int key, List treeData) DO
+        if (!isEmpty()) DO
+            Node tmp = root;
+            while (tmp != null) DO
+                if (key < tmp.getKey()) DO
+                    tmp = tmp.getLeft();
+                END else if (key > tmp.getKey()) DO
+                    tmp = tmp.getRight();
+                END else if (tmp.getKey() == key) DO
+                    tmp.setTreeData(treeData);
+                    break;
+                END
+            END
+        END
+    END
+
+    List[] toArrayInOrder() DO
+        List[] arr = new List[count];
+        Index idx = new Index();
+        fillInOrder(root, arr, idx);
+        return arr;
+    END
+
+    private void fillInOrder(Node n, List[] arr, Index idx) DO
+        if (n == null) DO
+            return;
+        END
+        fillInOrder(n.getLeft(), arr, idx);
+        arr[idx.value++] = n.getTreeData();
+        fillInOrder(n.getRight(), arr, idx);
+    END
+
+    class Index DO
+        int value = 0;
+    END CLASS
+END CLASS
+
+
+class ConjuntoFracciones DO
+    private long numerador;
+    private long denominador;
+
+    ConjuntoFracciones(long numerador, long denominador) DO
+        this.numerador = numerador;
+
+        if (denominador == 0) DO
+            this.denominador = 1;
+        END else DO
+            this.denominador = denominador;
+        END
+
+        if (this.denominador < 0) DO
+            this.numerador *= -1;
+            this.denominador *= -1;
+        END
+
+        simplificar();
+    END
+
+    long getDenominador() DO return denominador; END
+    long getNumerador() DO return numerador; END
+
+    private void simplificar() DO
+        long mcd = maximoComunDivisor(
+            Math.abs(this.numerador), Math.abs(this.denominador));
+        if (mcd != 0) DO
+            this.numerador /= mcd;
+            this.denominador /= mcd;
+        END
+    END
+
+    private long maximoComunDivisor(long a, long b) DO
+        long tmpA = a;
+        long tmpB = b;
+
+        while (tmpB != 0) DO
+            long tmp = tmpB;
+            tmpB = tmpA % tmpB;
+            tmpA = tmp;
+        END
+
+        return tmpA;
+    END
+
+    ConjuntoFracciones sum(ConjuntoFracciones other) DO
+        long newNumerador =
+            (this.numerador * other.denominador)
+                + (other.numerador * this.denominador);
+
+        long newDenominador = this.denominador * other.denominador;
+
+        return new ConjuntoFracciones(newNumerador, newDenominador);
+    END
+
+    void sumRange(Controller controller) DO
+        ConjuntoFracciones[] fractions = loadAndSort(controller);
+        ConjuntoFracciones result = new ConjuntoFracciones(0, 1);
+
+        for (int i = 0; i < fractions.length; i++) DO
+            result = result.sum(fractions[i]);
+        END
+
+        int destination = controller.getCelDestination();
+        List l = new List();
+        l.addFront(result);
+        controller.getB().setAt(destination, l);
+
+        int row = destination / controller.getCol();
+        int col = destination % controller.getCol();
+        controller.getiMtx()[row][col] = result.toString();
+    END
+
+    ConjuntoFracciones multiply(ConjuntoFracciones other) DO
+        long newNumerador = this.numerador * other.numerador;
+        long newDenominador = this.denominador * other.denominador;
+        return new ConjuntoFracciones(newNumerador, newDenominador);
+    END
+
+    void multiplyRange(Controller controller) DO
+        ConjuntoFracciones[] fractions = loadAndSort(controller);
+        ConjuntoFracciones result = new ConjuntoFracciones(1, 1);
+
+        for (int i = 0; i < fractions.length; i++) DO
+            result = result.multiply(fractions[i]);
+        END
+
+        int destination = controller.getCelDestination();
+        List l = new List();
+        l.addFront(result);
+        controller.getB().setAt(destination, l);
+
+        int row = destination / controller.getCol();
+        int col = destination % controller.getCol();
+        controller.getiMtx()[row][col] = result.toString();
+    END
+
+    ConjuntoFracciones divide(ConjuntoFracciones divider) DO
+        long newNumerador = this.numerador * divider.denominador;
+        long newDenominador = this.denominador * divider.numerador;
+        return new ConjuntoFracciones(newNumerador, newDenominador);
+    END
+
+    private ConjuntoFracciones[] loadAndSort(Controller controller) DO
+        String[][] mtx = controller.getiMtx();
+        int rowStart = controller.startI();
+        int rowEnd = controller.endI();
+        int colStart = controller.startJ();
+        int colEnd = controller.endJ();
+
+        int rowCount = rowEnd - rowStart + 1;
+        int colCount = colEnd - colStart + 1;
+        int count = rowCount * colCount;
+
+        ConjuntoFracciones[] arr = new ConjuntoFracciones[count];
+        double[] decimal = new double[count];
+        int index = 0;
+
+        for (int i = rowStart; i <= rowEnd; i++) DO
+            for (int j = colStart; j <= colEnd; j++) DO
+                String valor = mtx[i][j].replace(",", "");
+                String[] parts = valor.split("/");
+                long num = Long.parseLong(parts[0]);
+                long den = Long.parseLong(parts[1]);
+                ConjuntoFracciones f = new ConjuntoFracciones(num, den);
+
+                arr[index] = f;
+                decimal[index] = (double) num / den;
+                index++;
+            END
+        END
+
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) DO
+            boolean swapped = false;
+            for (int j = 0; j < n - 1 - i; j++) DO
+                if (decimal[j] > decimal[j + 1]) DO
+                    double tmpD = decimal[j];
+                    decimal[j] = decimal[j + 1];
+                    decimal[j + 1] = tmpD;
+
+                    ConjuntoFracciones tmp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = tmp;
+                    swapped = true;
+                END
+            END
+            if (!swapped) DO break; END
+        END
+
+        return arr;
+    END
+
+    void average(Controller controller) DO
+        ConjuntoFracciones[] arr = loadAndSort(controller);
+        ConjuntoFracciones acumulado = new ConjuntoFracciones(0, 1);
+
+        for (int i = 0; i < arr.length; i++) DO
+            acumulado = acumulado.sum(arr[i]);
+        END
+
+        ConjuntoFracciones divisor = new ConjuntoFracciones(arr.length, 1);
+        ConjuntoFracciones average = acumulado.divide(divisor);
+        int destine = controller.getCelDestination();
+
+        List l = new List();
+        l.addFront(average);
+        controller.getB().setAt(destine, l);
+
+        int row = destine / controller.getCol();
+        int col = destine % controller.getCol();
+        controller.getiMtx()[row][col] = average.toString();
+    END
+
+    void median(Controller controller) DO
+        ConjuntoFracciones[] arr = loadAndSort(controller);
+        int n = arr.length;
+        ConjuntoFracciones median = new ConjuntoFracciones(0, 1);
+
+        if (n % 2 == 0) DO
+            ConjuntoFracciones a = arr[(n - 1) / 2];
+            ConjuntoFracciones b = arr[n / 2];
+            ConjuntoFracciones two = new ConjuntoFracciones(2, 1);
+            median = a.sum(b).divide(two);
+        END else DO
+            median = arr[n / 2];
+        END
+
+        int destine = controller.getCelDestination();
+        List l = new List();
+        l.addFront(median);
+
+        int row = destine / controller.getCol();
+        int col = destine % controller.getCol();
+        controller.getiMtx()[row][col] = median.toString();
+    END
+
+    void maximum(Controller controller) DO
+        ConjuntoFracciones[] arr = loadAndSort(controller);
+        ConjuntoFracciones max = arr[arr.length - 1];
+        int destine = controller.getCelDestination();
+
+        List l = new List();
+        l.addFront(max);
+        controller.getB().setAt(destine, l);
+
+        int row = destine / controller.getCol();
+        int col = destine % controller.getCol();
+        controller.getiMtx()[row][col] = max.toString();
+    END
+
+    void minimum(Controller controller) DO
+        ConjuntoFracciones[] arr = loadAndSort(controller);
+        ConjuntoFracciones min = arr[0];
+        int destine = controller.getCelDestination();
+
+        List l = new List();
+        l.addFront(min);
+        controller.getB().setAt(destine, l);
+
+        int row = destine / controller.getCol();
+        int col = destine % controller.getCol();
+        controller.getiMtx()[row][col] = min.toString();
+    END
+
+    String toString() DO
+        return this.numerador + "/" + this.denominador;
+    END
+END CLASS
+
+
+class Controller DO
+    Scanner input;
+    String[][] iMtx;
+    int row, col;
+    String start, end;
+    Btree b;
+    boolean[][] used;
+    int maxWidth = 3;
+    int celDestination = -1;
+
+    void loadMtx() DO
+        row = input.nextInt();
+        col = input.nextInt();
+        input.nextLine();
+        iMtx = new String[row][col];
+        used = new boolean[row][col];
+        
+        for (int i = 0; i < row; i++) DO
+            for (int j = 0; j < col; j++) DO
+                iMtx[i][j] = input.next();
+                if (iMtx[i][j].length() > maxWidth) DO
+                    maxWidth = iMtx[i][j].length();
+                END
+            END
+        END
+    END
+
+    int getMaxWidth() DO return maxWidth; END
+    void setCelDestination(int pos) DO celDestination = pos; END
+    int getCelDestination() DO return celDestination; END
+    Btree getB() DO return b; END
+    int getCol() DO return col; END
+    int getRow() DO return row; END
+    String[][] getiMtx() DO return iMtx; END
+
+    int startI() DO
+        int rowStart = Integer.parseInt(start.substring(1)) - 1;
+        return rowStart;
+    END
+
+    int startJ() DO
+        int colStart = start.charAt(0) - 'A';
+        return colStart;
+    END
+
+    int endI() DO
+        int rowEnd = Integer.parseInt(end.substring(1)) - 1;
+        return rowEnd;
+    END
+
+    int endJ() DO
+        int colEnd = end.charAt(0) - 'A';
+        return colEnd;
+    END
+
+    String commandProcessor() DO
+        while (input.hasNextLine()) DO
+            String line = input.nextLine().trim();
+            if (line.isEmpty()) continue;
+            return commandRun(line);
+        END
+        return "";
+    END
+
+    int locate(String parameters) DO
+        String letra = parameters.substring(0, 1);
+        String numero = parameters.substring(1);
+        int columna = letra.charAt(0) - 'A';
+        int fila = Integer.parseInt(numero) - 1;
+        return fila * col + columna;
+    END
+
+    void erase(String parameters) DO
+        String letra = parameters.substring(0, 1);
+        String numero = parameters.substring(1);
+        int columna = letra.charAt(0) - 'A';
+        int fila = Integer.parseInt(numero) - 1;
+        if (fila >= 0 && fila < row && columna >= 0 && columna < col) DO
+            used[fila][columna] = true;
+        END
+    END
+
+    void setConjunto(String parameters) DO
+        String[] parts = parameters.split(",");
+        String nombre = parts[0];
+        List listFracciones = new List();
+
+        for (int i = 1; i < parts.length; i++) DO
+            String celda = parts[i].trim();
+            int posicion = locate(celda);
+            List listCelda = b.getAt(posicion);
+            if (listCelda == null) DO
+                int fila = posicion / col;
+                int columna = posicion % col;
+                String valor = iMtx[fila][columna];
+                if (valor != null) DO
+                    ConjuntoFracciones fraccion = parseFraccion(valor);
+                    listFracciones.addBack(fraccion);
+                END
+            END else DO
+                ConjuntoFracciones fraccion = listCelda.getAt(0);
+                if (fraccion != null) DO
+                    listFracciones.addBack(fraccion);
+                END
+            END
+        END
+
+        int key = nombre.hashCode();
+        b.add(key, listFracciones);
+    END
+
+    private void handleSet(String opp, String parameters) DO
+        int key = parameters.hashCode();
+        List list = b.getAt(key);
+        if (list != null && celDestination != -1) DO
+            ConjuntoFracciones result = null;
+
+            if (opp.equals("SUM")) DO
+                ConjuntoFracciones sum = new ConjuntoFracciones(0, 1);
+                int i = 0;
+                while (true) DO
+                    ConjuntoFracciones frac = list.getAt(i);
+                    if (frac == null) break;
+                    sum = sum.sum(frac);
+                    i++;
+                END
+                result = sum;
+            END else if (opp.equals("MUL")) DO
+                ConjuntoFracciones product = new ConjuntoFracciones(1, 1);
+                int i = 0;
+                while (true) DO
+                    ConjuntoFracciones frac = list.getAt(i);
+                    if (frac == null) break;
+                    product = product.multiply(frac);
+                    i++;
+                END
+                result = product;
+            END else if (opp.equals("AVR")) DO
+                ConjuntoFracciones sum = new ConjuntoFracciones(0, 1);
+                int count = 0;
+                int i = 0;
+                while (true) DO
+                    ConjuntoFracciones frac = list.getAt(i);
+                    if (frac == null) break;
+                    sum = sum.sum(frac);
+                    count++;
+                    i++;
+                END
+                ConjuntoFracciones average = sum.divide(new ConjuntoFracciones(count, 1));
+                result = average;
+            END else if (opp.equals("MDN")) DO
+                int count = 0;
+                int i = 0;
+                while (list.getAt(i) != null) DO
+                    count++;
+                    i++;
+                END
+
+                ConjuntoFracciones[] arr = new ConjuntoFracciones[count];
+                double[] decimals = new double[count];
+
+                for (int j = 0; j < count; j++) DO
+                    arr[j] = list.getAt(j);
+                    decimals[j] = (double) arr[j].getNumerador() / arr[j].getDenominador();
+                END
+
+                for (int a = 0; a < count - 1; a++) DO
+                    for (int b = 0; b < count - 1 - a; b++) DO
+                        if (decimals[b] > decimals[b + 1]) DO
+                            double tmpD = decimals[b];
+                            decimals[b] = decimals[b + 1];
+                            decimals[b + 1] = tmpD;
+
+                            ConjuntoFracciones tmpF = arr[b];
+                            arr[b] = arr[b + 1];
+                            arr[b + 1] = tmpF;
+                        END
+                    END
+                END
+
+                ConjuntoFracciones median;
+                if (count % 2 == 0) DO
+                    ConjuntoFracciones a = arr[(count - 1) / 2];
+                    ConjuntoFracciones b = arr[count / 2];
+                    ConjuntoFracciones two = new ConjuntoFracciones(2, 1);
+                    median = a.sum(b).divide(two);
+                END else DO
+                    median = arr[count / 2];
+                END
+                result = median;
+            END else if (opp.equals("MIN")) DO
+                ConjuntoFracciones min = list.getAt(0);
+                int i = 1;
+                while (true) DO
+                    ConjuntoFracciones frac = list.getAt(i);
+                    if (frac == null) break;
+                    long comp = min.getNumerador() * frac.getDenominador()
+                        - frac.getNumerador() * min.getDenominador();
+                    if (comp > 0) DO
+                        min = frac;
+                    END
+                    i++;
+                END
+                result = min;
+            END else if (opp.equals("MAX")) DO
+                ConjuntoFracciones max = list.getAt(0);
+                int i = 1;
+                while (true) DO
+                    ConjuntoFracciones frac = list.getAt(i);
+                    if (frac == null) break;
+                    long comp = max.getNumerador() * frac.getDenominador()
+                        - frac.getNumerador() * max.getDenominador();
+                    if (comp < 0) DO
+                        max = frac;
+                    END
+                    i++;
+                END
+                result = max;
+            END
+
+            List resultList = new List();
+            resultList.addFront(result);
+            b.add(celDestination, resultList);
+
+            int fila = celDestination / col;
+            int columna = celDestination % col;
+            iMtx[fila][columna] = result.toString();
+        END
+    END
+
+    String commandRun(String command) DO
+        if (command == null) return "";
+        String line = command.trim();
+        if (line.isEmpty()) return "";
+        
+        String commandWithoutEqual = line.startsWith("=") ? line.substring(1) : line;
+        int openParen = commandWithoutEqual.indexOf('(');
+        int closeParen = commandWithoutEqual.lastIndexOf(')');
+        String commandName;
+        String parameters = "";
+        
+        if (openParen == -1 || closeParen == -1 || closeParen < openParen) DO
+            commandName = commandWithoutEqual.trim();
+        END else DO
+            commandName = commandWithoutEqual.substring(0, openParen).trim();
+            parameters = commandWithoutEqual.substring(openParen + 1, closeParen).trim();
+        END
+
+        if (commandName.isEmpty()) return "";
+
+        if (commandName.equals("CEL")) DO
+            int pos = locate(parameters);
+            setCelDestination(pos);
+            erase(parameters);
+        END else if (commandName.equals("SET")) DO
+            setConjunto(parameters);
+        END else if (commandName.equals("SUM")) DO
+            if (parameters.contains(":")) DO
+                String[] range = parameters.split(":");
+                if (range.length == 2) DO
+                    start = range[0];
+                    end = range[1];
+                    ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+                    c.sumRange(this);
+                END
+            END else DO
+                handleSet("SUM", parameters);
+            END
+        END else if (commandName.equals("MUL")) DO
+            if (parameters.contains(":")) DO
+                String[] range = parameters.split(":");
+                if (range.length == 2) DO
+                    start = range[0];
+                    end = range[1];
+                    ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+                    c.multiplyRange(this);
+                END
+            END else DO
+                handleSet("MUL", parameters);
+            END
+        END else if (commandName.equals("AVR")) DO
+            if (parameters.contains(":")) DO
+                String[] range = parameters.split(":");
+                if (range.length == 2) DO
+                    start = range[0];
+                    end = range[1];
+                    ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+                    c.average(this);
+                END
+            END else DO
+                handleSet("AVR", parameters);
+            END
+        END else if (commandName.equals("MDN")) DO
+            if (parameters.contains(":")) DO
+                String[] range = parameters.split(":");
+                if (range.length == 2) DO
+                    start = range[0];
+                    end = range[1];
+                    ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+                    c.median(this);
+                END
+            END else DO
+                handleSet("MDN", parameters);
+            END
+        END else if (commandName.equals("MIN")) DO
+            if (parameters.contains(":")) DO
+                String[] range = parameters.split(":");
+                if (range.length == 2) DO
+                    start = range[0];
+                    end = range[1];
+                    ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+                    c.minimum(this);
+                END
+            END else DO
+                handleSet("MIN", parameters);
+            END
+        END else if (commandName.equals("MAX")) DO
+            if (parameters.contains(":")) DO
+                String[] rango = parameters.split(":");
+                if (rango.length == 2) DO
+                    start = rango[0];
+                    end = rango[1];
+                    ConjuntoFracciones c = new ConjuntoFracciones(0, 1);
+                    c.maximum(this);
+                END
+            END else DO
+                handleSet("MAX", parameters);
+            END
+        END else if (commandName.equals("PRINT")) DO
+            if (parameters.isEmpty()) DO
+                printMatrix();
+            END else DO
+                printConjunto(parameters);
+            END
+        END
+
+        return commandName;
+    END
+
+    void printMatrix() DO
+        maxWidth = 0;
+        for (int i = 0; i < row; i++) DO
+            for (int j = 0; j < col; j++) DO
+                if (iMtx[i][j] != null) DO
+                    int len = iMtx[i][j].length();
+                    if (len > maxWidth) maxWidth = len;
+                END
+            END
+        END
+        
+        System.out.print("   |");
+        for (int i = 0; i < col; i++) DO
+            char colLetter = (char) ('A' + i);
+            System.out.printf("%" + (maxWidth + 1) + "c ", colLetter);
+        END
+        System.out.println();
+
+        System.out.print("---+");
+        for (int i = 0; i < col; i++) DO
+            System.out.print("-".repeat(maxWidth + 1) + " ");
+        END
+        System.out.println();
+
+        for (int i = 0; i < row; i++) DO
+            System.out.printf("%3d|", i + 1);
+            for (int j = 0; j < col; j++) DO
+                String valor = iMtx[i][j].replace(",", "");
+                String[] parts = valor.split("/");
+                long num = Long.parseLong(parts[0]);
+                long den = Long.parseLong(parts[1]);
+                ConjuntoFracciones cf = new ConjuntoFracciones(num, den);
+                System.out.printf("%" + (maxWidth + 1) + "s ", cf.toString());
+            END
+            System.out.println();
+        END
+        System.out.println();
+    END
+
+    void printConjunto(String nombreConjunto) DO
+        int key = nombreConjunto.hashCode();
+        List lista = b.getAt(key);
+        if (lista != null) DO
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            while (true) DO
+                ConjuntoFracciones fraccion = lista.getAt(i);
+                if (fraccion == null) break;
+                if (i > 0) sb.append(", ");
+                sb.append(fraccion.toString());
+                i++;
+            END
+            System.out.println(sb.toString());
+        END
+    END
+
+    void addUnused() DO
+        for (int i = 0; i < row; i++) DO
+            for (int j = 0; j < col; j++) DO
+                if (used[i][j]) continue;
+                int pos = i * col + j;
+                if (b.getAt(pos) == null) DO
+                    String valor = iMtx[i][j];
+                    ConjuntoFracciones frac = parseFraccion(valor.replace(",", ""));
+                    List l = new List();
+                    l.addFront(frac);
+                    b.add(pos, l);
+                END
+            END
+        END
+    END
+
+    ConjuntoFracciones parseFraccion(String s) DO
+        String clean = s.replace(",", "");
+        String[] partes = clean.split("/");
+        long num = Long.parseLong(partes[0]);
+        long den = Long.parseLong(partes[1]);
+        return new ConjuntoFracciones(num, den);
+    END
+END CLASS
+
+
+class List DO
+    class Node DO
+        ConjuntoFracciones listData;
+        Node next;
+        Node previous;
+
+        Node(ConjuntoFracciones data) DO
+            this.listData = data;
+            this.next = null;
+            this.previous = null;
+        END
+
+        ConjuntoFracciones getListData() DO return listData; END
+        Node getNext() DO return next; END
+        Node getPrevious() DO return previous; END
+
+        void setListData(ConjuntoFracciones data) DO this.listData = data; END
+        void setNext(Node next) DO this.next = next; END
+        void setPrevious(Node previous) DO this.previous = previous; END
+
+        String toString() DO return String.valueOf(listData); END
+    END CLASS
+
+    int size;
+    Node head;
+    Node tail;
+
+    List() DO
+        size = 0;
+        head = null;
+        tail = null;
+    END
+
+    boolean isEmpty() DO
+        if (size == 0) DO
+            return true;
+        END
+        return false;
+    END
+
+    void addFront(ConjuntoFracciones data) DO
+        Node n = new Node(data);
+        if (isEmpty()) DO
+            head = n;
+            tail = n;
+        END else DO
+            head.setPrevious(n);
+            n.setNext(head);
+            head = n;
+        END
+        size++;
+    END
+
+    void addBack(ConjuntoFracciones data) DO
+        Node n = new Node(data);
+        if (isEmpty()) DO
+            head = n;
+            tail = n;
+        END else DO
+            tail.setNext(n);
+            n.setPrevious(tail);
+            tail = n;
+        END
+        size++;
+    END
+
+    void remove(int index) DO
+        if (0 <= index && index <= size) DO
+            if (index == 0) DO
+                head = head.getNext();
+                head.setPrevious(null);
+            END else if (index == size - 1) DO
+                tail = tail.getPrevious();
+                tail.setNext(null);
+            END else DO
+                Node tmp = head;
+                for (int i = 0; i < size; i++) DO
+                    if (i == index) DO
+                        tmp.getPrevious().setNext(tmp.getNext());
+                        tmp.getNext().setPrevious(tmp.getPrevious());
+                    END
+                    tmp = tmp.getNext();
+                END
+            END
+            size--;
+        END
+    END
+
+    ConjuntoFracciones getAt(int index) DO
+        ConjuntoFracciones data = null;
+        if (0 <= index && index < size) DO
+            Node tmp = head;
+            for (int i = 0; i < size; i++) DO
+                if (i == index) DO
+                    data = tmp.getListData();
+                    break;
+                END
+                tmp = tmp.getNext();
+            END
+        END
+        return data;
+    END
+
+    void setAt(int index, ConjuntoFracciones data) DO
+        if (0 <= index && index < size) DO
+            Node tmp = head;
+            for (int i = 0; i < size; i++) DO
+                if (i == index) DO
+                    tmp.setListData(data);
+                    break;
+                END
+                tmp = tmp.getNext();
+            END
+        END
+    END
+END CLASS
+
+
+
+class Main DO
+    /**
+     * Método main.
+     * @param args
+     */
+    static void main(String[] args) DO
+        Controller c = new Controller();
+        c.loadMtx();
+
+        // Primero ejecutar todos los comandos excepto PRINT
+        while (true) DO
+            String command = c.commandProcessor();
+
+            if (command.equals("PRINT") || command.isEmpty()) DO
+                break;
+            END   
+        END  
+
+        c.addUnused();
+
+        while (true) DO
+            String command = c.commandProcessor();
+
+            if (command.isEmpty()) DO
+                break;
+            END
+        END
+    END
+
+    private Main() DO END
+END CLASS
